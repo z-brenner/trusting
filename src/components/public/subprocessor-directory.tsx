@@ -28,10 +28,10 @@ export function SubprocessorDirectory({ subprocessors }: { subprocessors: Snapsh
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by name or service"
-            className={cn(inputClasses, "h-9 pl-9 focus:border-[var(--brand)] focus:ring-[color-mix(in_srgb,var(--brand)_35%,white)]")}
+            className={cn(inputClasses, "h-10 rounded-full pl-9 focus:border-[var(--brand)] focus:ring-[color-mix(in_srgb,var(--brand)_35%,white)]")}
           />
         </label>
-        <p className="text-[13px] text-ink-muted" aria-live="polite">
+        <p className="eyebrow" aria-live="polite">
           {filtered.length === subprocessors.length
             ? `${subprocessors.length} ${subprocessors.length === 1 ? "subprocessor" : "subprocessors"}`
             : `${filtered.length} of ${subprocessors.length} shown`}
@@ -45,10 +45,10 @@ export function SubprocessorDirectory({ subprocessors }: { subprocessors: Snapsh
       ) : (
         <>
           {/* Desktop table */}
-          <div className="hidden overflow-hidden rounded-lg border border-line bg-surface md:block">
+          <div className="hidden overflow-hidden rounded-xl border border-line bg-surface md:block">
             <table className="w-full table-fixed border-collapse text-left text-sm">
               <thead>
-                <tr className="border-b border-line bg-surface-muted text-xs font-medium tracking-wide text-ink-muted uppercase">
+                <tr className="eyebrow border-b border-line bg-surface-muted">
                   <th scope="col" className="w-[32%] px-4 py-2.5">
                     Vendor
                   </th>
@@ -65,7 +65,7 @@ export function SubprocessorDirectory({ subprocessors }: { subprocessors: Snapsh
               </thead>
               <tbody className="divide-y divide-line">
                 {filtered.map((s) => (
-                  <tr key={s.id} className="align-top">
+                  <tr key={s.id} className="align-top transition-colors duration-150 hover:bg-surface-muted">
                     <td className="px-4 py-3">
                       <VendorName s={s} />
                       {s.services ? <p className="mt-0.5 text-[13px] text-ink-muted">{s.services}</p> : null}
@@ -88,18 +88,18 @@ export function SubprocessorDirectory({ subprocessors }: { subprocessors: Snapsh
           {/* Mobile cards */}
           <ul className="space-y-3 md:hidden">
             {filtered.map((s) => (
-              <li key={s.id} className="rounded-lg border border-line bg-surface px-4 py-3.5">
+              <li key={s.id} className="rounded-xl border border-line bg-surface px-4 py-4">
                 <VendorName s={s} />
                 {s.services ? <p className="mt-0.5 text-[13px] text-ink-muted">{s.services}</p> : null}
                 <dl className="mt-3 space-y-2 text-[13px]">
                   <div>
-                    <dt className="text-xs font-medium tracking-wide text-ink-muted uppercase">Processing locations</dt>
+                    <dt className="eyebrow">Processing locations</dt>
                     <dd className="mt-1">
                       <LocationChips locations={s.locations} />
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs font-medium tracking-wide text-ink-muted uppercase">Data categories</dt>
+                    <dt className="eyebrow">Data categories</dt>
                     <dd className="mt-1 text-ink-muted">
                       {s.dataCategories.length ? s.dataCategories.map(dataCategoryLabel).join(", ") : "Not specified"}
                     </dd>
@@ -140,7 +140,7 @@ function LocationChips({ locations }: { locations: string[] }) {
   return (
     <ul className="flex flex-wrap gap-1" aria-label="Processing locations">
       {locations.map((code) => (
-        <li key={code} className="rounded-full bg-neutral-soft px-2 py-0.5 text-xs font-medium text-ink-muted">
+        <li key={code} className="rounded-full border border-line bg-surface px-2 py-0.5 text-xs font-medium text-ink">
           {locationName(code)}
         </li>
       ))}

@@ -35,10 +35,10 @@ export function SectionNav({ sections, className }: { sections: SectionLink[]; c
   }, [sections]);
 
   return (
-    <nav aria-label="Sections" className={cn("sticky top-0 z-20 border-b border-line bg-surface/95 backdrop-blur-sm", className)}>
+    <nav aria-label="Sections" className={cn("sticky top-0 z-20 border-b border-line bg-canvas/90 backdrop-blur-md", className)}>
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <ul className="-mb-px flex gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {sections.map((s) => {
+        <ul className="-mb-px flex gap-5 overflow-x-auto [scrollbar-width:none] sm:gap-7 [&::-webkit-scrollbar]:hidden">
+          {sections.map((s, i) => {
             const isActive = active === s.id;
             return (
               <li key={s.id} className="shrink-0">
@@ -46,12 +46,13 @@ export function SectionNav({ sections, className }: { sections: SectionLink[]; c
                   href={`#${s.id}`}
                   aria-current={isActive ? "location" : undefined}
                   className={cn(
-                    "inline-flex h-12 items-center border-b-2 px-3 text-sm transition-colors duration-150",
-                    isActive
-                      ? "border-[var(--brand)] font-medium text-ink"
-                      : "border-transparent text-ink-muted hover:border-line-strong hover:text-ink",
+                    "inline-flex h-12 items-center gap-2 border-b-2 text-[13px] font-medium transition-colors duration-150",
+                    isActive ? "border-[var(--brand)] text-ink" : "border-transparent text-ink-muted hover:text-ink",
                   )}
                 >
+                  <span className="font-mono text-[11px] text-ink-faint" aria-hidden="true">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
                   {s.label}
                 </a>
               </li>

@@ -39,12 +39,12 @@ export default async function PublicTrustCenterPage() {
 
   if (!published) {
     return (
-      <main className="flex flex-1 items-center justify-center px-4 py-16">
+      <main className="dot-grid flex flex-1 items-center justify-center px-4 py-16">
         <div className="max-w-md text-center">
-          <span className="mx-auto mb-5 flex size-11 items-center justify-center rounded-lg bg-neutral-soft text-ink-muted" aria-hidden="true">
-            <ShieldCheck className="size-6" />
+          <span className="mx-auto mb-6 flex size-12 items-center justify-center rounded-full bg-ink text-ink-inverse" aria-hidden="true">
+            <ShieldCheck className="size-5" />
           </span>
-          <h1 className="text-2xl font-semibold tracking-tight text-ink">This Trust Center hasn’t been published yet.</h1>
+          <h1 className="font-display text-[36px] leading-[1.05] text-ink sm:text-[44px]">This Trust Center hasn’t been published yet.</h1>
           <p className="mt-3 text-sm text-ink-muted">Please check back later.</p>
           <p className="mt-8 text-[13px] text-ink-muted">
             <Link href="/login" className="underline-offset-2 hover:text-ink hover:underline">

@@ -95,7 +95,7 @@ export function SubprocessorMap({ subprocessors, brandColor = "#1f3a5f", classNa
 
   return (
     <div className={cn("space-y-4", className)}>
-      <div ref={containerRef} className="relative overflow-hidden rounded-lg border border-line bg-surface">
+      <div ref={containerRef} className="relative overflow-hidden rounded-xl border border-line bg-surface">
         <svg
           viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
           className="block h-auto w-full"
@@ -108,7 +108,7 @@ export function SubprocessorMap({ subprocessors, brandColor = "#1f3a5f", classNa
             const code = country?.code;
             const vendors = code ? byCountry.get(code) : undefined;
             if (!vendors || !code) {
-              return <path key={p.id || p.fallbackName} d={p.d} fill="#e9e9ee" stroke="#ffffff" strokeWidth={0.6} aria-hidden="true" />;
+              return <path key={p.id || p.fallbackName} d={p.d} fill="#ebebe7" stroke="#ffffff" strokeWidth={0.6} aria-hidden="true" />;
             }
             const count = vendors.length;
             const isSelected = selected === code;
@@ -163,7 +163,7 @@ export function SubprocessorMap({ subprocessors, brandColor = "#1f3a5f", classNa
           Disclosed processing location
         </span>
         <span className="inline-flex items-center gap-2">
-          <span className="inline-block size-3 rounded-sm bg-[#e9e9ee]" aria-hidden="true" />
+          <span className="inline-block size-3 rounded-sm bg-[#ebebe7]" aria-hidden="true" />
           No disclosed processing
         </span>
         <span className="basis-full text-ink-muted sm:basis-auto">
@@ -173,7 +173,7 @@ export function SubprocessorMap({ subprocessors, brandColor = "#1f3a5f", classNa
 
       <div aria-live="polite">
         {selected ? (
-          <div className="rounded-lg border border-line bg-surface px-5 py-4 animate-fade-in">
+          <div className="rounded-xl border border-line bg-surface px-5 py-4 animate-fade-in">
             <div className="flex items-start justify-between gap-4">
               <h3 className="text-[15px] font-semibold text-ink">
                 {selectedVendors.length} {selectedVendors.length === 1 ? "subprocessor processes" : "subprocessors process"} data in{" "}

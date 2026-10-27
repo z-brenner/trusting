@@ -34,17 +34,18 @@ export default async function AccessPage(props: { searchParams: Promise<{ status
 
   return (
     <div className="flex min-h-full flex-1 flex-col bg-canvas text-ink" style={brandVars(primary, secondary) as React.CSSProperties}>
-      <header className="bg-[var(--brand)] text-[var(--brand-fg)]">
-        <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-5 sm:px-6">
+      <header className="relative border-b border-line bg-surface">
+        <div className="absolute inset-x-0 top-0 h-[3px] bg-[var(--brand)]" aria-hidden="true" />
+        <div className="mx-auto flex h-16 max-w-3xl items-center gap-3 px-4 sm:px-6">
           {company?.hasLogo ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src="/api/logo" alt="" width={36} height={36} className="size-9 shrink-0 rounded-md bg-white/95 object-contain p-0.5" />
+            <img src="/api/logo" alt="" width={36} height={36} className="size-9 shrink-0 rounded-md object-contain" />
           ) : (
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-[var(--brand-fg)]/12" aria-hidden="true">
-              <ShieldCheck className="size-5" />
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-ink text-ink-inverse" aria-hidden="true">
+              <ShieldCheck className="size-[18px]" />
             </span>
           )}
-          <Link href="/" className="text-[15px] font-semibold underline-offset-4 hover:underline">
+          <Link href="/" className="text-[15px] font-semibold tracking-[-0.01em] text-ink underline-offset-4 hover:underline">
             {title}
           </Link>
         </div>
@@ -54,8 +55,8 @@ export default async function AccessPage(props: { searchParams: Promise<{ status
         {result ? (
           <>
             <div className="max-w-2xl">
-              <p className="text-[13px] font-medium tracking-wide text-ink-muted uppercase">Document access</p>
-              <h1 className="mt-2 text-2xl font-semibold tracking-tight text-ink sm:text-[28px]">
+              <p className="eyebrow">Document access</p>
+              <h1 className="font-display mt-3 text-[34px] leading-[1.05] text-ink sm:text-[42px]">
                 Documents shared with {result.grant.requesterName}
               </h1>
               <p className="mt-3 text-[15px] text-ink-muted">
@@ -70,17 +71,17 @@ export default async function AccessPage(props: { searchParams: Promise<{ status
                 The documents covered by this grant are no longer available.
               </p>
             ) : (
-              <ul className="mt-8 divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface">
+              <ul className="mt-8 divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
                 {result.documents.map((doc) => (
-                  <li key={doc.id} className="flex flex-col gap-3 px-4 py-3.5 sm:flex-row sm:items-center sm:gap-4 sm:px-5">
-                    <div className="flex min-w-0 flex-1 items-start gap-3">
-                      <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md bg-neutral-soft text-ink-muted" aria-hidden="true">
+                  <li key={doc.id} className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:gap-5 sm:px-6">
+                    <div className="flex min-w-0 flex-1 items-start gap-4">
+                      <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg border border-line bg-surface text-ink-muted" aria-hidden="true">
                         <FileText className="size-4" />
                       </span>
                       <div className="min-w-0">
-                        <p className="text-[15px] font-medium text-ink">{doc.title}</p>
+                        <p className="text-[15px] font-semibold text-ink">{doc.title}</p>
                         {doc.description ? <p className="mt-0.5 text-[13px] leading-relaxed text-ink-muted">{doc.description}</p> : null}
-                        <p className="mt-1 text-xs text-ink-muted">
+                        <p className="mt-1.5 font-mono text-[11px] tracking-wide text-ink-faint uppercase">
                           {[documentCategoryLabel(doc.category), doc.versionLabel, doc.documentDate ? `Last updated ${formatDate(doc.documentDate)}` : "", formatBytes(doc.sizeBytes)]
                             .filter(Boolean)
                             .join(" · ")}
@@ -89,7 +90,7 @@ export default async function AccessPage(props: { searchParams: Promise<{ status
                     </div>
                     <a
                       href={signDownloadUrl(doc.id, "grant", result.grant.id)}
-                      className="inline-flex h-8 shrink-0 items-center gap-1.5 self-start rounded-md border border-line-strong bg-surface px-3 text-[13px] font-medium text-ink shadow-xs transition-colors duration-150 hover:bg-surface-muted sm:self-center"
+                      className="inline-flex h-8 shrink-0 items-center gap-1.5 self-start rounded-full border border-line bg-surface px-3.5 text-[13px] font-medium text-ink transition-colors duration-150 hover:border-line-strong hover:bg-surface-muted sm:self-center"
                     >
                       <Download className="size-3.5 text-ink-muted" aria-hidden="true" />
                       Download
@@ -103,10 +104,10 @@ export default async function AccessPage(props: { searchParams: Promise<{ status
           </>
         ) : (
           <div className="mx-auto max-w-md text-center">
-            <span className="mx-auto mb-5 flex size-11 items-center justify-center rounded-lg bg-neutral-soft text-ink-muted" aria-hidden="true">
+            <span className="mx-auto mb-6 flex size-12 items-center justify-center rounded-full border border-line bg-surface text-ink-muted" aria-hidden="true">
               <Lock className="size-5" />
             </span>
-            <h1 className="text-2xl font-semibold tracking-tight text-ink">
+            <h1 className="font-display text-[34px] leading-[1.05] text-ink">
               {status === "invalid" ? "This access link isn’t valid" : "No active document access"}
             </h1>
             <p className="mt-3 text-sm text-ink-muted">
@@ -117,7 +118,7 @@ export default async function AccessPage(props: { searchParams: Promise<{ status
             <p className="mt-8">
               <Link
                 href="/"
-                className="inline-flex h-9 items-center rounded-md border border-line-strong bg-surface px-3.5 text-sm font-medium text-ink shadow-xs transition-colors duration-150 hover:bg-surface-muted"
+                className="inline-flex h-9 items-center rounded-full border border-line bg-surface px-4 text-sm font-medium text-ink transition-colors duration-150 hover:border-line-strong hover:bg-surface-muted"
               >
                 Back to the Trust Center
               </Link>

@@ -1,57 +1,65 @@
 @import "tailwindcss";
-@import "@fontsource-variable/inter";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+@import "@fontsource/instrument-serif";
+@import "@fontsource/instrument-serif/400-italic.css";
 
 /*
-  Design tokens. See docs/DESIGN.md for the rationale.
-  Neutral canvas, charcoal type, one restrained accent for the admin UI and a
+  Design tokens. See docs/DESIGN.md.
+  Three type voices: Geist for interface and body, Instrument Serif for display
+  headings on the public page, Geist Mono for small meta labels. Warm-neutral
+  canvas, charcoal ink, hairline borders, one accent for the admin UI and a
   per-organisation brand colour (--brand) for the public Trust Center.
 */
 @theme {
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Instrument Serif", "Iowan Old Style", "Times New Roman", serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  --color-canvas: #f6f6f7;
+  --color-canvas: #f7f7f5;
   --color-surface: #ffffff;
-  --color-surface-muted: #fafafa;
-  --color-line: #e5e5ea;
-  --color-line-strong: #cfcfd6;
+  --color-surface-muted: #fafaf9;
+  --color-line: #e8e8e4;
+  --color-line-strong: #d3d3cd;
 
-  --color-ink: #1c1c22;
-  --color-ink-muted: #5c5d66;
-  --color-ink-faint: #8a8b95;
+  --color-ink: #17171a;
+  --color-ink-muted: #5d5e66;
+  --color-ink-faint: #8f9099;
   --color-ink-inverse: #ffffff;
 
-  --color-accent: #2b59c3;
-  --color-accent-hover: #244ca8;
-  --color-accent-soft: #eaf0fb;
-  --color-accent-ring: #9db3ea;
+  --color-accent: #2a52be;
+  --color-accent-hover: #22449e;
+  --color-accent-soft: #eaeffb;
+  --color-accent-ring: #a3b4ea;
 
-  --color-success: #1a7f4b;
-  --color-success-soft: #e6f4ec;
+  --color-success: #15803d;
+  --color-success-soft: #e7f5ec;
   --color-warning: #b45309;
-  --color-warning-soft: #fdf3e3;
+  --color-warning-soft: #fcf3e4;
   --color-danger: #b42318;
-  --color-danger-soft: #fceceb;
-  --color-info: #2b59c3;
-  --color-info-soft: #eaf0fb;
-  --color-neutral-soft: #ededf0;
+  --color-danger-soft: #fcecea;
+  --color-info: #2a52be;
+  --color-info-soft: #eaeffb;
+  --color-neutral-soft: #ededea;
   --color-teal: #0f766e;
-  --color-teal-soft: #e3f2f0;
+  --color-teal-soft: #e2f2f0;
 
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
-  --radius-xl: 16px;
+  --radius-xl: 18px;
 
-  --shadow-xs: 0 1px 2px rgba(20, 20, 28, 0.05);
-  --shadow-sm: 0 1px 3px rgba(20, 20, 28, 0.08), 0 1px 2px rgba(20, 20, 28, 0.04);
-  --shadow-md: 0 4px 12px rgba(20, 20, 28, 0.08), 0 1px 3px rgba(20, 20, 28, 0.04);
-  --shadow-lg: 0 12px 32px rgba(20, 20, 28, 0.12), 0 2px 6px rgba(20, 20, 28, 0.06);
+  --shadow-xs: 0 1px 1px rgba(23, 23, 26, 0.04);
+  --shadow-sm: 0 1px 2px rgba(23, 23, 26, 0.06), 0 1px 1px rgba(23, 23, 26, 0.03);
+  --shadow-md: 0 6px 16px rgba(23, 23, 26, 0.07), 0 1px 2px rgba(23, 23, 26, 0.04);
+  --shadow-lg: 0 20px 48px rgba(23, 23, 26, 0.14), 0 2px 6px rgba(23, 23, 26, 0.06);
 }
 
 :root {
   --brand: #1f3a5f;
   --brand-2: #0f766e;
+  --brand-fg: #ffffff;
+  --brand-text: #1f3a5f;
   color-scheme: light;
 }
 
@@ -59,7 +67,7 @@ html {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-feature-settings: "cv11", "ss01", "ss03";
+  font-feature-settings: "ss01", "cv01", "tnum";
 }
 
 body {
@@ -69,7 +77,7 @@ body {
 }
 
 ::selection {
-  background: var(--color-accent-soft);
+  background: color-mix(in srgb, var(--brand) 18%, white);
 }
 
 /* Focus rings: visible, consistent, keyboard-only. */
@@ -79,9 +87,9 @@ body {
   border-radius: var(--radius-sm);
 }
 
-/* Native dialog polish */
 dialog::backdrop {
-  background: rgba(20, 20, 28, 0.45);
+  background: rgba(23, 23, 26, 0.4);
+  backdrop-filter: blur(2px);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -93,15 +101,53 @@ dialog::backdrop {
   }
 }
 
-/* Small utility classes shared by both surfaces. */
+/* ---------- Shared utilities ---------- */
+
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* Small uppercase mono label used for section numbers, table headers and meta. */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+
+/* Faint dot grid for hero surfaces. */
+.dot-grid {
+  background-image: radial-gradient(color-mix(in srgb, var(--color-ink) 9%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.hairline {
+  border-color: var(--color-line);
+}
+
 .prose-trust p + p {
-  margin-top: 0.75em;
+  margin-top: 0.85em;
 }
 
 @keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateY(2px);
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -111,4 +157,8 @@ dialog::backdrop {
 
 .animate-fade-in {
   animation: fade-in 160ms ease-out;
+}
+
+.animate-rise {
+  animation: rise 500ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
