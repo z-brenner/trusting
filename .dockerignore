@@ -1,0 +1,46 @@
+# Keep the Docker build context small and free of secrets.
+# Everything listed here is either generated during the image build or never
+# needed inside the image.
+
+.git
+.github
+.vscode
+.idea
+
+# Dependencies and build output (installed/built inside the image)
+node_modules
+**/node_modules
+.next
+out
+build
+coverage
+tsconfig.tsbuildinfo
+next-env.d.ts
+
+# Generated Prisma client (re-created by `prisma generate` in the build stage)
+src/generated
+
+# Local environment files: configuration is injected at runtime, never baked in
+.env
+.env.*
+!.env.example
+
+# Local uploads, test artefacts and tooling output
+storage
+storage-test
+test-results
+playwright-report
+tests
+
+# Documentation and repository meta files are not needed in the image
+docs
+*.md
+LICENSE
+docker-compose.yml
+docker-compose.*.yml
+Dockerfile
+.dockerignore
+
+# OS / editor noise
+.DS_Store
+*.log

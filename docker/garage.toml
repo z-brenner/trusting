@@ -1,0 +1,30 @@
+# Garage configuration for the bundled single-node object store (docker-compose.yml).
+#
+# Garage is an S3-compatible object store (https://garagehq.deuxfleurs.fr). It runs
+# here as a single node with no replication; durability comes from your backups
+# (docs/backup-restore.md). Secrets are injected through environment variables:
+#   GARAGE_RPC_SECRET          64 hex characters (openssl rand -hex 32)
+#   GARAGE_DEFAULT_ACCESS_KEY  = S3_ACCESS_KEY_ID   (format: GK + 24 hex characters)
+#   GARAGE_DEFAULT_SECRET_KEY  = S3_SECRET_ACCESS_KEY
+#   GARAGE_DEFAULT_BUCKET      = S3_BUCKET
+# The server is started with `--single-node --default-bucket`, which creates the
+# layout, the access key and the bucket on first start.
+
+metadata_dir = "/var/lib/garage/meta"
+data_dir = "/var/lib/garage/data"
+db_engine = "sqlite"
+
+replication_factor = 1
+
+rpc_bind_addr = "[::]:3901"
+rpc_public_addr = "127.0.0.1:3901"
+
+[s3_api]
+# Must match S3_REGION in .env; Garage verifies the region in request signatures.
+s3_region = "us-east-1"
+api_bind_addr = "[::]:3900"
+root_domain = ".s3.garage.localhost"
+
+[admin]
+# GET http://garage:3903/health needs no token and is used as the health check.
+api_bind_addr = "[::]:3903"
