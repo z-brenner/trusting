@@ -24,18 +24,18 @@ export function StepFooter({ continueLabel }: { continueLabel?: string }) {
   };
 
   return (
-    <div className="mt-10 flex flex-col-reverse gap-3 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mt-12 flex flex-col-reverse gap-3 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between">
       <div>
         {prev ? (
-          <Button variant="ghost" onClick={() => goToStep(prev.n)} disabled={navigating || checking}>
+          <Button variant="ghost" onClick={() => goToStep(prev.n)} disabled={navigating || checking} className="-ml-3">
             <ArrowLeft className="size-4" aria-hidden="true" />
             Back
           </Button>
         ) : null}
       </div>
       {next ? (
-        <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:gap-3">
-          <span className="hidden text-sm text-ink-muted sm:inline">Next: {next.title}</span>
+        <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:gap-4">
+          <span className="hidden font-mono text-[11px] tracking-[0.02em] text-ink-faint sm:inline">Next: {next.title}</span>
           <Button onClick={onContinue} loading={navigating || checking}>
             {continueLabel ?? "Continue"}
             <ArrowRight className="size-4" aria-hidden="true" />

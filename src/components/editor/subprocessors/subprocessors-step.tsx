@@ -16,6 +16,7 @@ import type { SnapshotSubprocessor } from "@/lib/snapshot";
 import { addVendorSubprocessorAction, deleteSubprocessorAction, removeVendorSubprocessorAction } from "@/lib/actions/editor";
 import { cn, safeHttpUrl } from "@/lib/utils";
 import { ConfirmButton } from "../confirm-button";
+import { StepBody } from "../step-body";
 import { StepFooter } from "../step-footer";
 import { useTrackedAction } from "../wizard-context";
 import { SubprocessorDialog } from "./subprocessor-dialog";
@@ -91,7 +92,7 @@ export function SubprocessorsStep({ subprocessors, primaryColor }: { subprocesso
   const missingLocations = subprocessors.filter((s) => s.locations.length === 0).length;
 
   return (
-    <div className="space-y-10">
+    <StepBody>
       <FormSection
         title="Pick from the vendor directory"
         description="Tick the vendors you use. We prefill their name, links and typical services; you set the processing locations yourself."
@@ -117,7 +118,7 @@ export function SubprocessorsStep({ subprocessors, primaryColor }: { subprocesso
             ))}
           </Select>
         </div>
-        <div className="max-h-[26rem] overflow-y-auto rounded-lg border border-line bg-surface shadow-xs">
+        <div className="max-h-[26rem] overflow-y-auto rounded-lg border border-line bg-surface">
           {grouped.length === 0 ? (
             <p className="px-4 py-8 text-center text-sm text-ink-muted">
               No vendors match “{query}”. You can add it as a custom subprocessor below.
@@ -125,7 +126,7 @@ export function SubprocessorsStep({ subprocessors, primaryColor }: { subprocesso
           ) : (
             grouped.map(([cat, vendors]) => (
               <div key={cat}>
-                <p className="sticky top-0 border-b border-line bg-surface-muted px-4 py-1.5 text-xs font-medium uppercase tracking-wide text-ink-faint">
+                <p className="eyebrow sticky top-0 z-10 border-b border-line bg-surface-muted px-4 py-2">
                   {cat}
                 </p>
                 <ul className="divide-y divide-line">
@@ -133,7 +134,7 @@ export function SubprocessorsStep({ subprocessors, primaryColor }: { subprocesso
                     const checked = optimisticSelected.has(v.slug);
                     return (
                       <li key={v.slug}>
-                        <label className={cn("flex cursor-pointer items-start gap-3 px-4 py-2.5 hover:bg-surface-muted", checked && "bg-accent-soft/40")}>
+                        <label className={cn("flex cursor-pointer items-start gap-3 px-4 py-3 transition-colors hover:bg-surface-muted", checked && "bg-accent-soft/50 hover:bg-accent-soft/70")}>
                           <Checkbox className="mt-0.5" checked={checked} onChange={(e) => toggleVendor(v, e.target.checked)} />
                           <span className="min-w-0 flex-1">
                             <span className="block text-sm font-medium text-ink">{v.name}</span>
@@ -170,11 +171,11 @@ export function SubprocessorsStep({ subprocessors, primaryColor }: { subprocesso
           />
         ) : (
           <>
-            <ul className="divide-y divide-line rounded-lg border border-line bg-surface shadow-xs">
+            <ul className="divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface">
               {subprocessors.map((s) => {
                 const site = safeHttpUrl(s.websiteUrl);
                 return (
-                  <li key={s.id} className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-start">
+                  <li key={s.id} className="flex flex-col gap-3 px-4 py-3.5 transition-colors hover:bg-surface-muted sm:flex-row sm:items-start">
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="text-sm font-medium text-ink">{s.name}</span>
@@ -222,7 +223,7 @@ export function SubprocessorsStep({ subprocessors, primaryColor }: { subprocesso
 
       {subprocessors.length ? (
         <FormSection title="Processing locations" description="This is how the map will look on your public page.">
-          <div className="rounded-lg border border-line bg-surface p-4 shadow-xs">
+          <div className="rounded-lg border border-line bg-surface p-4">
             <SubprocessorMap subprocessors={mapRows} brandColor={primaryColor} />
           </div>
         </FormSection>
@@ -237,6 +238,6 @@ export function SubprocessorsStep({ subprocessors, primaryColor }: { subprocesso
       />
 
       <StepFooter />
-    </div>
+    </StepBody>
   );
 }

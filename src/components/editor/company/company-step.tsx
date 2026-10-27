@@ -5,6 +5,7 @@ import { Field, FormSection } from "@/components/ui/field";
 import { Input, Switch, Textarea } from "@/components/ui/input";
 import { saveCompanyAction } from "@/lib/actions/editor";
 import type { CompanyInput } from "@/lib/validation";
+import { StepBody } from "../step-body";
 import { StepFooter } from "../step-footer";
 import { WelcomeBanner } from "../welcome-banner";
 import { useTrackedAction, useWizard } from "../wizard-context";
@@ -95,7 +96,7 @@ export function CompanyStep({ initial, hasLogo }: { initial: CompanyFormValues; 
   const defaultTitle = values.companyName.trim() ? `${values.companyName.trim()} Trust Center` : "Trust Center";
 
   return (
-    <div className="space-y-10">
+    <StepBody>
       <WelcomeBanner companyName={initial.companyName} />
 
       {errors._ ? (
@@ -192,6 +193,6 @@ export function CompanyStep({ initial, hasLogo }: { initial: CompanyFormValues; 
       </FormSection>
 
       <StepFooter />
-    </div>
+    </StepBody>
   );
 }

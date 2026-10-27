@@ -15,7 +15,7 @@ export function DialogFooter({
   formId: string;
 }) {
   return (
-    <div className="-mx-6 -mb-5 mt-6 flex justify-end gap-2 border-t border-line px-6 py-4">
+    <div className="-mx-6 -mb-5 mt-6 flex justify-end gap-2 border-t border-line bg-surface-muted px-6 py-4">
       <Button variant="secondary" onClick={onClose} disabled={saving}>
         Cancel
       </Button>

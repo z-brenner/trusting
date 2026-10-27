@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Inbox, FileText, Plug, Activity } from "lucide-react";
+import { ArrowRight, Inbox, FileText, Activity } from "lucide-react";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { env, googleConfigured, microsoftConfigured } from "@/lib/env";
@@ -10,7 +10,11 @@ import { AdminContainer, PageHeader } from "@/components/admin/page-header";
 import { Card, CardHeader, CardBody, Badge, Alert, buttonClasses } from "@/components/ui";
 import { StatusCard } from "@/components/admin/dashboard/status-card";
 import { relativeTime } from "@/components/admin/dashboard/relative-time";
+import { ProviderIcon } from "@/components/admin/integrations/provider-icon";
 import { visibilityLabel } from "@/data/document-categories";
+import { cn } from "@/lib/utils";
+
+const quietLink = "text-[13px] font-medium text-ink-muted underline-offset-4 transition-colors hover:text-ink hover:underline";
 
 export default async function AdminHome() {
   await requireAdmin();
@@ -59,7 +63,7 @@ export default async function AdminHome() {
           unpublishedChanges={unpublished}
         />
 
-        <div className="grid items-start gap-6 lg:grid-cols-3">
+        <div className="grid min-w-0 items-start gap-6 lg:grid-cols-3">
           <Card className="lg:col-span-2">
             <CardHeader
               title={
@@ -69,13 +73,13 @@ export default async function AdminHome() {
                 </span>
               }
               action={
-                <Link href="/admin/requests" className="text-sm font-medium text-accent hover:underline">
+                <Link href="/admin/requests" className={quietLink}>
                   View all
                 </Link>
               }
             />
             {pending.length === 0 ? (
-              <CardBody>
+              <CardBody className="py-8">
                 <p className="flex items-center gap-2 text-sm text-ink-muted">
                   <Inbox className="size-4 text-ink-faint" aria-hidden="true" /> No pending requests. Requests from visitors appear here.
                 </p>
@@ -83,7 +87,7 @@ export default async function AdminHome() {
             ) : (
               <ul className="divide-y divide-line">
                 {pending.map((r) => (
-                  <li key={r.id} className="flex flex-col gap-2 px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
+                  <li key={r.id} className="flex min-w-0 flex-col gap-2 px-5 py-3.5 transition-colors hover:bg-surface-muted sm:flex-row sm:items-center sm:justify-between">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-ink">
                         {r.requesterName}
@@ -107,27 +111,27 @@ export default async function AdminHome() {
             )}
           </Card>
 
-          <div className="space-y-6">
+          <div className="min-w-0 space-y-6">
             <Card>
               <CardHeader
                 title="Documents"
                 action={
-                  <Link href="/admin/documents" className="text-sm font-medium text-accent hover:underline">
+                  <Link href="/admin/documents" className={quietLink}>
                     Manage
                   </Link>
                 }
               />
-              <CardBody>
+              <CardBody className="py-5">
                 {totalDocs === 0 ? (
                   <p className="flex items-center gap-2 text-sm text-ink-muted">
                     <FileText className="size-4 text-ink-faint" aria-hidden="true" /> No documents yet.
                   </p>
                 ) : (
-                  <dl className="grid grid-cols-3 gap-2 text-sm">
-                    {(["PUBLIC", "REQUEST", "PRIVATE"] as const).map((v) => (
-                      <div key={v}>
-                        <dt className="text-[13px] text-ink-muted">{visibilityLabel(v)}</dt>
-                        <dd className="text-lg font-semibold text-ink">{counts[v]}</dd>
+                  <dl className="grid grid-cols-3 divide-x divide-line">
+                    {(["PUBLIC", "REQUEST", "PRIVATE"] as const).map((v, i) => (
+                      <div key={v} className={cn("flex flex-col-reverse justify-end", i === 0 ? "pr-4" : "px-4")}>
+                        <dt className="mt-2 text-[12px] leading-4 text-ink-muted">{visibilityLabel(v)}</dt>
+                        <dd className="font-display text-[28px] leading-none text-ink tabular-nums">{counts[v]}</dd>
                       </div>
                     ))}
                   </dl>
@@ -139,15 +143,15 @@ export default async function AdminHome() {
               <CardHeader
                 title="Integrations"
                 action={
-                  <Link href="/admin/integrations" className="text-sm font-medium text-accent hover:underline">
+                  <Link href="/admin/integrations" className={quietLink}>
                     Manage
                   </Link>
                 }
               />
-              <CardBody className="space-y-2.5">
-                <IntegrationRow name="Google Drive" configured={googleConfigured()} account={google?.accountEmail || google?.accountName} />
-                <IntegrationRow name="OneDrive" configured={microsoftConfigured()} account={microsoft?.accountEmail || microsoft?.accountName} />
-              </CardBody>
+              <ul className="divide-y divide-line">
+                <IntegrationRow provider="google" name="Google Drive" configured={googleConfigured()} account={google?.accountEmail || google?.accountName} />
+                <IntegrationRow provider="microsoft" name="OneDrive" configured={microsoftConfigured()} account={microsoft?.accountEmail || microsoft?.accountName} />
+              </ul>
             </Card>
           </div>
         </div>
@@ -156,13 +160,13 @@ export default async function AdminHome() {
           <CardHeader
             title="Recent activity"
             action={
-              <Link href="/admin/activity" className="text-sm font-medium text-accent hover:underline">
+              <Link href="/admin/activity" className={quietLink}>
                 View all
               </Link>
             }
           />
           {activity.length === 0 ? (
-            <CardBody>
+            <CardBody className="py-8">
               <p className="flex items-center gap-2 text-sm text-ink-muted">
                 <Activity className="size-4 text-ink-faint" aria-hidden="true" /> Nothing recorded yet.
               </p>
@@ -170,12 +174,12 @@ export default async function AdminHome() {
           ) : (
             <ul className="divide-y divide-line">
               {activity.map((a) => (
-                <li key={a.id} className="flex items-baseline justify-between gap-4 px-5 py-2.5 text-sm">
+                <li key={a.id} className="flex items-baseline justify-between gap-4 px-5 py-3 text-sm transition-colors hover:bg-surface-muted">
                   <span className="min-w-0 truncate text-ink">
                     {AUDIT_LABELS[a.action] ?? a.action}
                     {a.actorLabel ? <span className="text-ink-muted"> · {a.actorLabel}</span> : null}
                   </span>
-                  <time dateTime={a.createdAt.toISOString()} className="shrink-0 text-[13px] text-ink-faint">
+                  <time dateTime={a.createdAt.toISOString()} className="shrink-0 font-mono text-[11px] text-ink-faint">
                     {relativeTime(a.createdAt)}
                   </time>
                 </li>
@@ -188,14 +192,26 @@ export default async function AdminHome() {
   );
 }
 
-function IntegrationRow({ name, configured, account }: { name: string; configured: boolean; account?: string | null }) {
+function IntegrationRow({
+  provider,
+  name,
+  configured,
+  account,
+}: {
+  provider: "google" | "microsoft";
+  name: string;
+  configured: boolean;
+  account?: string | null;
+}) {
   return (
-    <div className="flex items-center justify-between gap-3 text-sm">
-      <span className="flex items-center gap-2 text-ink">
-        <Plug className="size-4 text-ink-faint" aria-hidden="true" /> {name}
+    <li className="flex items-center justify-between gap-3 px-5 py-3 text-sm">
+      <span className="flex min-w-0 items-center gap-2.5 text-ink">
+        <ProviderIcon provider={provider} className="size-7 rounded-[6px] [&>svg]:size-4" />
+        {name}
       </span>
       {account ? (
-        <span className="truncate text-[13px] text-success" title={account}>
+        <span className="flex min-w-0 items-center gap-1.5 truncate text-[13px] text-ink-muted" title={account}>
+          <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-success" />
           Connected · {account}
         </span>
       ) : configured ? (
@@ -203,6 +219,6 @@ function IntegrationRow({ name, configured, account }: { name: string; configure
       ) : (
         <span className="text-[13px] text-ink-faint">Not configured</span>
       )}
-    </div>
+    </li>
   );
 }

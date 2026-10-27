@@ -55,13 +55,13 @@ export function PreviewFrame({
 
   return (
     <div className={cn("relative flex h-full w-full flex-col", className)} style={{ height }}>
-      <div className={cn("relative flex-1 min-h-0", mobile && "flex justify-center overflow-auto py-4")}>
+      <div className={cn("relative min-h-0 flex-1", mobile && "flex justify-center overflow-auto py-4")}>
         <div
           className={cn(
             "relative h-full bg-surface",
             mobile
               ? "w-[390px] max-w-full shrink-0 overflow-hidden rounded-[28px] border-[6px] border-ink shadow-md"
-              : "w-full overflow-hidden rounded-lg border border-line",
+              : "w-full overflow-hidden rounded-[10px] border border-line",
           )}
         >
           {blocked ? (
@@ -86,7 +86,7 @@ export function PreviewFrame({
           )}
           {loading && !blocked ? (
             <div className="pointer-events-none absolute inset-x-0 top-0 h-0.5 overflow-hidden bg-line" aria-hidden="true">
-              <div className="h-full w-1/3 animate-[preview-bar_1s_linear_infinite] bg-accent" />
+              <div className="h-full w-1/3 animate-[preview-bar_1s_linear_infinite] bg-ink" />
             </div>
           ) : null}
         </div>
@@ -115,13 +115,16 @@ export function PreviewToolbar({
   const { bumpPreview } = useWizard();
   return (
     <div className="flex flex-wrap items-center justify-between gap-2">
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-ink">{compact ? "Live preview" : "Preview"}</span>
-        <span className="rounded-full bg-neutral-soft px-2 py-0.5 text-[11px] font-medium text-ink-muted">Draft</span>
+      <div className="flex items-center gap-2 font-mono text-[11px] font-medium tracking-[0.06em] uppercase">
+        <span className="text-ink">{compact ? "Live preview" : "Preview"}</span>
+        <span aria-hidden="true" className="text-line-strong">
+          ·
+        </span>
+        <span className="text-ink-faint">Draft</span>
       </div>
       <div className="flex min-w-0 flex-wrap items-center gap-1">
         {device && onDeviceChange ? (
-          <div role="radiogroup" aria-label="Preview device" className="mr-1 inline-flex rounded-md border border-line-strong bg-surface p-0.5 shadow-xs">
+          <div role="radiogroup" aria-label="Preview device" className="mr-1 inline-flex rounded-md border border-line bg-canvas p-0.5">
             {(
               [
                 { id: "desktop", label: "Desktop", Icon: Monitor },
@@ -136,7 +139,7 @@ export function PreviewToolbar({
                 onClick={() => onDeviceChange(id)}
                 className={cn(
                   "inline-flex h-7 items-center gap-1.5 rounded-[5px] px-2.5 text-xs font-medium transition-colors duration-150",
-                  device === id ? "bg-ink text-ink-inverse" : "text-ink-muted hover:text-ink",
+                  device === id ? "bg-surface text-ink shadow-xs ring-1 ring-line" : "text-ink-muted hover:text-ink",
                 )}
               >
                 <Icon className="size-3.5" aria-hidden="true" />
@@ -145,14 +148,14 @@ export function PreviewToolbar({
             ))}
           </div>
         ) : null}
-        <Button variant="ghost" size="sm" onClick={bumpPreview} aria-label="Reload preview" title="Reload preview">
+        <Button variant="ghost" size="sm" onClick={bumpPreview} aria-label="Reload preview" title="Reload preview" className="px-2">
           <RefreshCw className="size-3.5" aria-hidden="true" />
         </Button>
         <a
           href="/preview"
           target="_blank"
           rel="noreferrer"
-          className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-[13px] text-ink-muted hover:bg-neutral-soft hover:text-ink"
+          className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-[13px] text-ink-muted transition-colors hover:bg-neutral-soft hover:text-ink"
         >
           Open <ExternalLink className="size-3.5" aria-hidden="true" />
         </a>
@@ -161,12 +164,14 @@ export function PreviewToolbar({
   );
 }
 
-/** Right-hand column on xl screens. */
+/** Right-hand column on xl screens: a thin device-like frame around the draft. */
 export function PreviewPanel({ className }: { className?: string }) {
   return (
-    <aside className={cn("flex flex-col gap-3", className)} aria-label="Live preview">
-      <PreviewToolbar compact />
-      <div className="min-h-0 flex-1">
+    <aside className={cn("flex flex-col rounded-xl border border-line bg-surface p-2", className)} aria-label="Live preview">
+      <div className="px-2 pt-1 pb-2.5">
+        <PreviewToolbar compact />
+      </div>
+      <div className="min-h-0 flex-1 overflow-hidden rounded-[10px] bg-canvas">
         <PreviewFrame />
       </div>
     </aside>

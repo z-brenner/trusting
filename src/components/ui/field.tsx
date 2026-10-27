@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 export function Label({ className, ...props }: React.LabelHTMLAttributes<HTMLLabelElement>) {
-  return <label className={cn("block text-sm font-medium text-ink", className)} {...props} />;
+  return <label className={cn("block text-[13px] font-medium text-ink", className)} {...props} />;
 }
 
 export function Field({
@@ -52,10 +52,10 @@ export function FormSection({
   className?: string;
 }) {
   return (
-    <section className={cn("space-y-4", className)}>
-      <div>
-        <h2 className="text-base font-semibold text-ink">{title}</h2>
-        {description ? <p className="mt-1 text-sm text-ink-muted">{description}</p> : null}
+    <section className={cn("space-y-5", className)}>
+      <div className="max-w-prose">
+        <h2 className="text-base font-semibold tracking-[-0.01em] text-ink">{title}</h2>
+        {description ? <p className="mt-1 text-sm leading-relaxed text-ink-muted">{description}</p> : null}
       </div>
       {children}
     </section>

@@ -1,8 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Check, CloudOff } from "lucide-react";
-import { Spinner } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useWizard } from "./wizard-context";
 
@@ -15,6 +13,7 @@ function relative(ts: number, now: number) {
   return `${h} h ago`;
 }
 
+/** Quiet autosave status: a small dot plus mono text. */
 export function SaveIndicator({ className }: { className?: string }) {
   const { saveStatus, savedAt } = useWizard();
   const [now, setNow] = React.useState(0);
@@ -31,24 +30,30 @@ export function SaveIndicator({ className }: { className?: string }) {
     <div
       role="status"
       aria-live="polite"
-      className={cn("inline-flex h-7 items-center gap-1.5 rounded-full px-2.5 text-xs transition-colors duration-150", {
-        "bg-neutral-soft text-ink-muted": saveStatus === "saving",
-        "bg-success-soft text-success": saveStatus === "saved",
-        "bg-danger-soft text-danger": saveStatus === "error",
-      }, className)}
+      className={cn(
+        "inline-flex h-7 items-center gap-2 font-mono text-[11px] tracking-[0.02em] transition-colors duration-150",
+        {
+          "text-ink-faint": saveStatus === "saving",
+          "text-ink-muted": saveStatus === "saved",
+          "text-danger": saveStatus === "error",
+        },
+        className,
+      )}
     >
+      <span
+        aria-hidden="true"
+        className={cn("size-1.5 rounded-full", {
+          "animate-pulse bg-ink-faint": saveStatus === "saving",
+          "bg-success": saveStatus === "saved",
+          "bg-danger": saveStatus === "error",
+        })}
+      />
       {saveStatus === "saving" ? (
-        <>
-          <Spinner className="size-3" /> Saving…
-        </>
+        <>Saving…</>
       ) : saveStatus === "saved" ? (
-        <>
-          <Check className="size-3.5" aria-hidden="true" /> Saved · {savedAt ? relative(savedAt, Math.max(now, savedAt)) : "just now"}
-        </>
+        <>Saved · {savedAt ? relative(savedAt, Math.max(now, savedAt)) : "just now"}</>
       ) : (
-        <>
-          <CloudOff className="size-3.5" aria-hidden="true" /> Could not save
-        </>
+        <>Could not save</>
       )}
     </div>
   );

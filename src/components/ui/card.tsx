@@ -2,25 +2,32 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("rounded-lg border border-line bg-surface shadow-xs", className)} {...props} />;
+  return <div className={cn("min-w-0 rounded-lg border border-line bg-surface", className)} {...props} />;
 }
 
+/**
+ * Card header. Titles render as a small, quiet label (mono eyebrow) so that
+ * the content of the card, not its chrome, carries the visual weight.
+ * Pass `eyebrow={false}` for a conventional sans title.
+ */
 export function CardHeader({
   title,
   description,
   action,
   className,
+  eyebrow = true,
 }: {
   title: React.ReactNode;
   description?: React.ReactNode;
   action?: React.ReactNode;
   className?: string;
+  eyebrow?: boolean;
 }) {
   return (
-    <div className={cn("flex items-start justify-between gap-4 border-b border-line px-5 py-4", className)}>
+    <div className={cn("flex items-start justify-between gap-4 border-b border-line px-5 py-3.5", className)}>
       <div className="min-w-0">
-        <h3 className="text-[15px] font-semibold text-ink">{title}</h3>
-        {description ? <p className="mt-0.5 text-sm text-ink-muted">{description}</p> : null}
+        <h3 className={cn(eyebrow ? "eyebrow text-ink-muted!" : "text-[15px] font-semibold text-ink")}>{title}</h3>
+        {description ? <p className={cn("text-sm text-ink-muted", eyebrow ? "mt-1.5" : "mt-0.5")}>{description}</p> : null}
       </div>
       {action ? <div className="shrink-0">{action}</div> : null}
     </div>
@@ -102,8 +109,8 @@ export function EmptyState({
   className?: string;
 }) {
   return (
-    <div className={cn("flex flex-col items-center justify-center rounded-lg border border-dashed border-line-strong px-6 py-10 text-center", className)}>
-      {icon ? <div className="mb-3 text-ink-faint">{icon}</div> : null}
+    <div className={cn("flex flex-col items-center justify-center rounded-lg border border-dashed border-line-strong px-6 py-12 text-center", className)}>
+      {icon ? <div className="mb-3 flex size-10 items-center justify-center rounded-full bg-canvas text-ink-faint">{icon}</div> : null}
       <p className="text-sm font-medium text-ink">{title}</p>
       {description ? <p className="mt-1 max-w-sm text-sm text-ink-muted">{description}</p> : null}
       {action ? <div className="mt-4">{action}</div> : null}

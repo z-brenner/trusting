@@ -33,7 +33,7 @@ function ReviewRow({ tone, title, detail, fixHref, fixLabel }: { tone: Tone; tit
   const { goToStep } = useWizard();
   const Icon = tone === "ok" ? Check : tone === "warn" ? AlertTriangle : Minus;
   return (
-    <li className="flex items-start gap-3 px-5 py-3">
+    <li className="flex items-start gap-3 px-5 py-3.5 transition-colors hover:bg-surface-muted">
       <span
         className={
           "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full " +
@@ -45,10 +45,14 @@ function ReviewRow({ tone, title, detail, fixHref, fixLabel }: { tone: Tone; tit
       </span>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-medium text-ink">{title}</p>
-        {detail ? <p className="mt-0.5 text-[13px] text-ink-muted">{detail}</p> : null}
+        {detail ? <p className="mt-0.5 text-[13px] leading-relaxed text-ink-muted">{detail}</p> : null}
       </div>
       {fixHref ? (
-        <button type="button" onClick={() => goToStep(Number(fixHref.split("/").pop()))} className="shrink-0 text-[13px] font-medium text-accent hover:underline">
+        <button
+          type="button"
+          onClick={() => goToStep(Number(fixHref.split("/").pop()))}
+          className="shrink-0 text-[13px] font-medium text-ink-muted underline-offset-4 transition-colors hover:text-ink hover:underline"
+        >
           {fixLabel ?? "Edit"}
         </button>
       ) : null}
@@ -137,9 +141,11 @@ export function PublishStep({
 
   return (
     <div className="space-y-10">
-      <section aria-label="Preview" className="space-y-3">
-        <PreviewToolbar device={device} onDeviceChange={setDevice} />
-        <div className="rounded-xl border border-line bg-canvas p-3 sm:p-4">
+      <section aria-label="Preview" className="rounded-xl border border-line bg-surface p-2">
+        <div className="px-2 pt-1 pb-2.5">
+          <PreviewToolbar device={device} onDeviceChange={setDevice} />
+        </div>
+        <div className="rounded-[10px] bg-canvas p-2 sm:p-3">
           <PreviewFrame device={device} height="min(72vh, 820px)" />
         </div>
       </section>
@@ -229,11 +235,11 @@ export function PublishStep({
                 {published && hasUnpublishedChanges ? <Badge tone="warning">Unpublished changes</Badge> : null}
               </div>
               {published && hasUnpublishedChanges ? (
-                <p className="text-[13px] text-ink-muted">Your draft differs from the live version. Publish again to update it.</p>
+                <p className="text-[13px] leading-relaxed text-ink-muted">Your draft differs from the live version. Publish again to update it.</p>
               ) : published ? (
-                <p className="text-[13px] text-ink-muted">The live version matches your draft.</p>
+                <p className="text-[13px] leading-relaxed text-ink-muted">The live version matches your draft.</p>
               ) : (
-                <p className="text-[13px] text-ink-muted">Visitors see nothing until you publish. You can unpublish at any time.</p>
+                <p className="text-[13px] leading-relaxed text-ink-muted">Visitors see nothing until you publish. You can unpublish at any time.</p>
               )}
               {message ? (
                 <Alert tone={message.tone}>{message.text}</Alert>
@@ -255,13 +261,13 @@ export function PublishStep({
           <Card>
             <CardHeader title="Public URL" />
             <CardBody className="space-y-3">
-              <p className="break-all rounded-md border border-line bg-canvas px-3 py-2 font-mono text-[13px] text-ink">{publicUrl}</p>
+              <p className="break-all rounded-md border border-line bg-canvas px-3 py-2 font-mono text-[12px] text-ink-muted">{publicUrl}</p>
               <div className="flex flex-wrap gap-2">
                 <Button variant="secondary" size="sm" onClick={copy}>
                   {copied ? <Check className="size-3.5" aria-hidden="true" /> : <Copy className="size-3.5" aria-hidden="true" />}
                   {copied ? "Copied" : "Copy public URL"}
                 </Button>
-                <a href={publicUrl} target="_blank" rel="noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-[13px] font-medium text-ink-muted hover:bg-neutral-soft hover:text-ink">
+                <a href={publicUrl} target="_blank" rel="noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-[13px] font-medium text-ink-muted transition-colors hover:bg-neutral-soft hover:text-ink">
                   Open <ExternalLink className="size-3.5" aria-hidden="true" />
                 </a>
               </div>

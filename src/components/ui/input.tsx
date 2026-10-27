@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 export const inputClasses =
-  "block w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-faint shadow-xs transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent-ring disabled:bg-surface-muted disabled:text-ink-faint aria-[invalid=true]:border-danger";
+  "block w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-faint shadow-xs transition-[border-color,box-shadow] duration-150 hover:border-ink-faint/60 focus:border-accent focus:outline-none disabled:bg-surface-muted disabled:text-ink-faint disabled:hover:border-line-strong aria-[invalid=true]:border-danger";
 
 export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
   function Input({ className, type = "text", ...props }, ref) {
@@ -22,7 +22,7 @@ export const Select = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttrib
       <select ref={ref} className={cn(inputClasses, "h-9 pr-8 appearance-none bg-no-repeat bg-[right_0.6rem_center] bg-[length:14px_14px]", className)}
         style={{
           backgroundImage:
-            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235c5d66' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")",
+            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235d5e66' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")",
         }}
         {...props}
       >
@@ -74,7 +74,7 @@ export function Switch({
       onClick={() => onChange(!checked)}
       className={cn(
         "relative inline-flex h-5 w-9 shrink-0 items-center rounded-full border border-transparent transition-colors duration-150 disabled:opacity-60",
-        checked ? "bg-accent" : "bg-line-strong",
+        checked ? "bg-ink" : "bg-line-strong",
         className,
       )}
     >

@@ -4,9 +4,9 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Check, Copy, ExternalLink, PenLine, Eye } from "lucide-react";
-import { Button, Card, CardBody, Badge, Alert, buttonClasses } from "@/components/ui";
+import { Button, Card, Alert, buttonClasses } from "@/components/ui";
 import { publishAction, unpublishAction } from "@/lib/actions/publish";
-import { formatDate } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 
 export function CopyButton({ value, label = "Copy", size = "sm" }: { value: string; label?: string; size?: "sm" | "md" }) {
   const [copied, setCopied] = React.useState(false);
@@ -35,6 +35,10 @@ export function CopyButton({ value, label = "Copy", size = "sm" }: { value: stri
   );
 }
 
+/**
+ * Publication status for the dashboard: a two-row panel. Left: status dot,
+ * version and date, then the public URL. Right: the action row.
+ */
 export function StatusCard({
   published,
   publicUrl,
@@ -71,61 +75,77 @@ export function StatusCard({
     router.refresh();
   }
 
+  const stale = Boolean(unpublishedChanges && published);
+
   return (
     <Card>
-      <CardBody className="space-y-4 py-5">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              {published ? (
-                <>
-                  <Badge tone="success">Published</Badge>
-                  <span className="text-sm text-ink-muted">
-                    Version {published.version} · {formatDate(published.publishedAt)}
-                  </span>
-                </>
-              ) : (
-                <>
-                  <Badge tone="neutral">Draft</Badge>
-                  <span className="text-sm text-ink-muted">Not published yet</span>
-                </>
-              )}
-            </div>
-            <div className="mt-2 flex flex-wrap items-center gap-2">
-              <code className="truncate rounded-md bg-surface-muted px-2 py-1 font-mono text-[13px] text-ink">{publicUrl}</code>
-              <CopyButton value={publicUrl} />
-              <a
-                href={publicUrl}
-                target="_blank"
-                rel="noreferrer"
-                className={buttonClasses("ghost", "sm")}
-              >
-                Open <ExternalLink className="size-3.5" aria-hidden="true" />
-              </a>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Link href="/admin/edit" className={buttonClasses("secondary", "md")}>
-              <PenLine className="size-4" aria-hidden="true" /> Edit Trust Center
-            </Link>
-            <a href="/preview" target="_blank" rel="noreferrer" className={buttonClasses("secondary", "md")}>
-              <Eye className="size-4" aria-hidden="true" /> Preview
-            </a>
-            <Button onClick={onPublish} loading={pending === "publish"} disabled={pending !== null}>
-              {published ? "Update" : "Publish"}
-            </Button>
+      <div className="flex flex-col gap-5 px-5 py-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0 space-y-3">
+          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm">
+            <span
+              aria-hidden="true"
+              className={cn("size-2 shrink-0 rounded-full", published ? (stale ? "bg-warning" : "bg-success") : "bg-ink-faint")}
+            />
             {published ? (
-              <Button variant="ghost" onClick={onUnpublish} loading={pending === "unpublish"} disabled={pending !== null}>
-                Unpublish
-              </Button>
-            ) : null}
+              <>
+                <span className="font-medium text-ink">Published</span>
+                <span className="text-ink-faint" aria-hidden="true">
+                  ·
+                </span>
+                <span className="text-ink-muted">Version {published.version}</span>
+                <span className="text-ink-faint" aria-hidden="true">
+                  ·
+                </span>
+                <span className="text-ink-muted">{formatDate(published.publishedAt)}</span>
+              </>
+            ) : (
+              <>
+                <span className="font-medium text-ink">Draft</span>
+                <span className="text-ink-faint" aria-hidden="true">
+                  ·
+                </span>
+                <span className="text-ink-muted">Not published yet</span>
+              </>
+            )}
+          </div>
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <code className="min-w-0 max-w-full truncate rounded-full border border-line bg-canvas px-3 py-1 font-mono text-[12px] text-ink-muted">
+              {publicUrl}
+            </code>
+            <CopyButton value={publicUrl} />
+            <a href={publicUrl} target="_blank" rel="noreferrer" className={buttonClasses("ghost", "sm")}>
+              Open <ExternalLink className="size-3.5" aria-hidden="true" />
+            </a>
           </div>
         </div>
-        {unpublishedChanges && published ? (
-          <p className="text-sm text-warning">You have unpublished changes. Visitors still see version {published.version}.</p>
-        ) : null}
-        {message ? <Alert tone={message.tone}>{message.text}</Alert> : null}
-      </CardBody>
+        <div className="flex flex-wrap items-center gap-2 lg:shrink-0 lg:justify-end">
+          <Link href="/admin/edit" className={buttonClasses("secondary", "md")}>
+            <PenLine className="size-4" aria-hidden="true" /> Edit Trust Center
+          </Link>
+          <a href="/preview" target="_blank" rel="noreferrer" className={buttonClasses("secondary", "md")}>
+            <Eye className="size-4" aria-hidden="true" /> Preview
+          </a>
+          <Button onClick={onPublish} loading={pending === "publish"} disabled={pending !== null}>
+            {published ? "Update" : "Publish"}
+          </Button>
+          {published ? (
+            <Button variant="ghost" onClick={onUnpublish} loading={pending === "unpublish"} disabled={pending !== null}>
+              Unpublish
+            </Button>
+          ) : null}
+        </div>
+      </div>
+      {stale || message ? (
+        <div className="space-y-3 border-t border-line px-5 py-3.5">
+          {stale && published ? (
+            <p className="flex items-center gap-2 text-sm text-ink-muted">
+              <span aria-hidden="true" className="size-1.5 rounded-full bg-warning" />
+              You have unpublished changes. Visitors still see version {published.version}.
+            </p>
+          ) : null}
+          {message ? <Alert tone={message.tone}>{message.text}</Alert> : null}
+        </div>
+      ) : null}
     </Card>
   );
 }

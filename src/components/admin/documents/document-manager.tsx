@@ -167,14 +167,14 @@ export function DocumentManager({ documents, integrations, variant = "page", max
               <div className={cn("hidden overflow-x-auto rounded-lg border border-line bg-surface", !compact && "md:block")}>
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-line text-left text-xs font-medium tracking-wide text-ink-muted uppercase">
-                      <th className="px-4 py-2.5 font-medium">Document</th>
-                      <th className="px-3 py-2.5 font-medium">Category</th>
-                      <th className="px-3 py-2.5 font-medium">Visibility</th>
-                      {!compact ? <th className="px-3 py-2.5 font-medium">Downloads</th> : null}
-                      <th className="px-3 py-2.5 font-medium">Version</th>
-                      {!compact ? <th className="px-3 py-2.5 font-medium">Size</th> : null}
-                      {!compact ? <th className="px-3 py-2.5 font-medium">Source</th> : null}
+                    <tr className="border-b border-line bg-surface-muted text-left">
+                      <th className="eyebrow px-4 py-2.5">Document</th>
+                      <th className="eyebrow px-3 py-2.5">Category</th>
+                      <th className="eyebrow px-3 py-2.5">Visibility</th>
+                      {!compact ? <th className="eyebrow px-3 py-2.5">Downloads</th> : null}
+                      <th className="eyebrow px-3 py-2.5">Version</th>
+                      {!compact ? <th className="eyebrow px-3 py-2.5">Size</th> : null}
+                      {!compact ? <th className="eyebrow px-3 py-2.5">Source</th> : null}
                       <th className="px-3 py-2.5">
                         <span className="sr-only">Actions</span>
                       </th>
@@ -182,7 +182,7 @@ export function DocumentManager({ documents, integrations, variant = "page", max
                   </thead>
                   <tbody className="divide-y divide-line">
                     {filtered.map((doc) => (
-                      <tr key={doc.id} className="align-top">
+                      <tr key={doc.id} className="align-top transition-colors hover:bg-surface-muted">
                         <td className="max-w-xs px-4 py-3">
                           <p className="truncate font-medium text-ink" title={doc.title}>
                             {doc.title}
@@ -217,7 +217,7 @@ export function DocumentManager({ documents, integrations, variant = "page", max
               {/* Stacked cards for small screens and the wizard */}
               <ul className={cn("space-y-2", !compact && "md:hidden")}>
                 {filtered.map((doc) => (
-                  <li key={doc.id} className="rounded-lg border border-line bg-surface px-4 py-3">
+                  <li key={doc.id} className="rounded-lg border border-line bg-surface px-4 py-3.5">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="truncate font-medium text-ink">{doc.title}</p>
@@ -239,7 +239,7 @@ export function DocumentManager({ documents, integrations, variant = "page", max
             </>
           )}
           {!compact ? (
-            <p className="text-[13px] text-ink-faint">
+            <p className="font-mono text-[11px] tracking-[0.02em] text-ink-faint">
               {filtered.length === documents.length ? `${documents.length} ${documents.length === 1 ? "document" : "documents"}` : `${filtered.length} of ${documents.length} documents`}
             </p>
           ) : null}

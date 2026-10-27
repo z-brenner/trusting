@@ -35,7 +35,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
 
   return (
     <AdminContainer className="max-w-5xl">
-      <Link href="/admin/requests" className="mb-4 inline-flex items-center gap-1 text-sm text-ink-muted hover:text-ink">
+      <Link href="/admin/requests" className="mb-5 inline-flex items-center gap-1 text-[13px] text-ink-muted transition-colors hover:text-ink">
         <ArrowLeft className="size-4" aria-hidden="true" /> All requests
       </Link>
       <PageHeader
@@ -91,7 +91,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
                 ) : null}
               </dl>
               <div className="mt-4 border-t border-line pt-4">
-                <p className="text-[13px] font-medium text-ink-muted">Message</p>
+                <p className="eyebrow">Message</p>
                 {request.message ? (
                   <p className="mt-1 text-sm whitespace-pre-wrap text-ink">{request.message}</p>
                 ) : (
@@ -135,8 +135,8 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
 function Item({ label, children, className = "" }: { label: string; children: React.ReactNode; className?: string }) {
   return (
     <div className={className}>
-      <dt className="text-[13px] text-ink-muted">{label}</dt>
-      <dd className="mt-0.5 text-ink">{children}</dd>
+      <dt className="eyebrow">{label}</dt>
+      <dd className="mt-1.5 text-ink">{children}</dd>
     </div>
   );
 }

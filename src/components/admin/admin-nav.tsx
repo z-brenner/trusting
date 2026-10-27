@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShieldCheck, LayoutDashboard, PenLine, FileText, Inbox, Plug, Settings, LogOut, ExternalLink } from "lucide-react";
+import { ShieldCheck, LayoutDashboard, PenLine, FileText, Inbox, Plug, Settings, LogOut, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
@@ -17,15 +17,15 @@ const items = [
 export function AdminNav({ user, logoutAction }: { user: { name: string; email: string }; logoutAction: () => Promise<void> }) {
   const pathname = usePathname();
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-surface/95 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4 sm:px-6">
-        <Link href="/admin" className="flex items-center gap-2 font-semibold text-ink">
-          <span className="flex size-7 items-center justify-center rounded-md bg-ink text-ink-inverse">
-            <ShieldCheck className="size-4" aria-hidden="true" />
+    <header className="sticky top-0 z-30 border-b border-line bg-surface">
+      <div className="mx-auto flex h-13 max-w-7xl items-center gap-5 px-4 sm:px-6">
+        <Link href="/admin" className="flex shrink-0 items-center gap-2.5 rounded-md text-ink">
+          <span className="flex size-6 items-center justify-center rounded-[6px] bg-ink text-ink-inverse">
+            <ShieldCheck className="size-3.5" aria-hidden="true" />
           </span>
-          <span className="hidden sm:inline">Trust Center</span>
+          <span className="hidden text-sm font-semibold tracking-[-0.01em] sm:inline">Trust Center</span>
         </Link>
-        <nav aria-label="Admin" className="-mb-px ml-2 flex h-14 items-stretch gap-1 overflow-x-auto">
+        <nav aria-label="Admin" className="flex h-13 min-w-0 items-stretch gap-0.5 overflow-x-auto">
           {items.map((item) => {
             const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
             const Icon = item.icon;
@@ -35,34 +35,38 @@ export function AdminNav({ user, logoutAction }: { user: { name: string; email: 
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex items-center gap-1.5 border-b-2 px-2.5 text-sm font-medium transition-colors",
-                  active ? "border-ink text-ink" : "border-transparent text-ink-muted hover:text-ink",
+                  "relative flex h-8 shrink-0 items-center gap-1.5 self-center rounded-md px-2.5 text-[13px] font-medium transition-colors duration-150",
+                  active ? "text-ink" : "text-ink-muted hover:text-ink",
                 )}
               >
-                <Icon className="size-4" aria-hidden="true" />
+                <Icon className="size-4 md:hidden" aria-hidden="true" />
                 <span className="hidden md:inline">{item.label}</span>
+                <span
+                  aria-hidden="true"
+                  className={cn("absolute inset-x-2.5 -bottom-2.5 h-0.5 rounded-t-full bg-ink transition-opacity", active ? "opacity-100" : "opacity-0")}
+                />
               </Link>
             );
           })}
         </nav>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex shrink-0 items-center gap-1">
           <a
             href="/"
             target="_blank"
             rel="noreferrer"
-            className="hidden items-center gap-1 text-sm text-ink-muted hover:text-ink sm:flex"
+            className="hidden h-8 items-center gap-1 rounded-md px-2 text-[13px] text-ink-muted transition-colors hover:bg-neutral-soft hover:text-ink sm:flex"
           >
-            View site <ExternalLink className="size-3.5" aria-hidden="true" />
+            View site <ArrowUpRight className="size-3.5" aria-hidden="true" />
           </a>
-          <span className="hidden text-sm text-ink-muted lg:inline" title={user.email}>
+          <span className="hidden px-2 text-[13px] text-ink-faint lg:inline" title={user.email}>
             {user.name}
           </span>
           <form action={logoutAction}>
             <button
               type="submit"
-              className="flex items-center gap-1 rounded-md px-2 py-1.5 text-sm text-ink-muted hover:bg-neutral-soft hover:text-ink"
+              className="flex h-8 items-center gap-1.5 rounded-md px-2 text-[13px] text-ink-muted transition-colors hover:bg-neutral-soft hover:text-ink"
             >
-              <LogOut className="size-4" aria-hidden="true" />
+              <LogOut className="size-3.5" aria-hidden="true" />
               <span className="hidden sm:inline">Sign out</span>
             </button>
           </form>

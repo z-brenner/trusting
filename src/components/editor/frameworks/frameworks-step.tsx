@@ -12,6 +12,7 @@ import { FRAMEWORKS, FRAMEWORK_KIND_LABELS, FRAMEWORK_STATUS_LABELS, frameworkBy
 import { documentCategoryLabel, visibilityLabel } from "@/data/document-categories";
 import { addFrameworkAction, removeFrameworkAction, saveFrameworkAction } from "@/lib/actions/editor";
 import { cn, toDateInputValue } from "@/lib/utils";
+import { StepBody } from "../step-body";
 import { StepFooter } from "../step-footer";
 import { useTrackedAction, useWizard } from "../wizard-context";
 
@@ -159,7 +160,7 @@ export function FrameworksStep({ entries, documents }: { entries: FrameworkEntry
   const selected = entries.map((e) => ({ entry: e, def: frameworkBySlug(e.frameworkSlug) })).filter((x) => x.def && drafts[x.entry.frameworkSlug]);
 
   return (
-    <div className="space-y-10">
+    <StepBody>
       <Alert tone="info" title="Selecting a framework does not claim certification.">
         Choose the status that is true for you. Visitors always see the status next to the framework name.
       </Alert>
@@ -176,7 +177,7 @@ export function FrameworksStep({ entries, documents }: { entries: FrameworkEntry
             className={cn(inputClasses, "h-9 pl-8")}
           />
         </div>
-        <ul className="max-h-[24rem] divide-y divide-line overflow-y-auto rounded-lg border border-line bg-surface shadow-xs">
+        <ul className="max-h-[24rem] divide-y divide-line overflow-y-auto rounded-lg border border-line bg-surface">
           {catalog.length === 0 ? (
             <li className="px-4 py-8 text-center text-sm text-ink-muted">No frameworks match “{query}”.</li>
           ) : (
@@ -184,7 +185,7 @@ export function FrameworksStep({ entries, documents }: { entries: FrameworkEntry
               const checked = optimistic.has(f.slug);
               return (
                 <li key={f.slug}>
-                  <label className={cn("flex cursor-pointer items-start gap-3 px-4 py-2.5 hover:bg-surface-muted", checked && "bg-accent-soft/40")}>
+                  <label className={cn("flex cursor-pointer items-start gap-3 px-4 py-3 transition-colors hover:bg-surface-muted", checked && "bg-accent-soft/50 hover:bg-accent-soft/70")}>
                     <Checkbox className="mt-0.5" checked={checked} onChange={(e) => toggle(f, e.target.checked)} />
                     <span className="min-w-0 flex-1">
                       <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -220,7 +221,8 @@ export function FrameworksStep({ entries, documents }: { entries: FrameworkEntry
               return (
                 <Card key={slug}>
                   <CardHeader
-                    className={cn(!open && "border-b-0")}
+                    eyebrow={false}
+                    className={cn("py-4", !open && "border-b-0")}
                     title={
                       <span className="flex flex-wrap items-center gap-2">
                         {d.shortName}
@@ -303,7 +305,7 @@ export function FrameworksStep({ entries, documents }: { entries: FrameworkEntry
                       {documents.length === 0 ? (
                         <p className="mt-1 text-[13px] text-ink-muted">No documents yet. Add certificates and reports in step 5, then link them here.</p>
                       ) : (
-                        <ul className="mt-2 divide-y divide-line rounded-md border border-line">
+                        <ul className="mt-2 divide-y divide-line overflow-hidden rounded-md border border-line">
                           {documents.map((doc) => {
                             const checked = draft.documentIds.includes(doc.id);
                             return (
@@ -355,6 +357,6 @@ export function FrameworksStep({ entries, documents }: { entries: FrameworkEntry
       </FormSection>
 
       <StepFooter />
-    </div>
+    </StepBody>
   );
 }

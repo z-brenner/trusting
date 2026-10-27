@@ -112,12 +112,14 @@ export function UploadArea({
           void handleFiles(e.dataTransfer.files);
         }}
         className={cn(
-          "flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed text-center transition-colors",
-          compact ? "px-4 py-5" : "px-6 py-8",
-          dragging ? "border-accent bg-accent-soft" : "border-line-strong bg-surface hover:bg-surface-muted",
+          "flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed text-center transition-colors duration-150",
+          compact ? "px-4 py-6" : "px-6 py-9",
+          dragging ? "border-accent bg-accent-soft" : "border-line-strong bg-surface hover:border-ink-faint hover:bg-surface-muted",
         )}
       >
-        <UploadCloud className="mb-2 size-6 text-ink-faint" aria-hidden="true" />
+        <span className="mb-3 flex size-9 items-center justify-center rounded-full border border-line bg-canvas text-ink-muted" aria-hidden="true">
+          <UploadCloud className="size-4" />
+        </span>
         <p className="text-sm font-medium text-ink">
           Drop files here or <span className="text-accent">browse</span>
         </p>

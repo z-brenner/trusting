@@ -23,7 +23,7 @@ export function CopyButton({ value, label = "Copy", className }: { value: string
         }
       }}
       className={cn(
-        "inline-flex h-7 shrink-0 items-center gap-1 rounded-md border border-line-strong bg-surface px-2 text-xs font-medium text-ink-muted hover:bg-surface-muted hover:text-ink",
+        "inline-flex h-7 shrink-0 items-center gap-1 rounded-[6px] border border-line-strong bg-surface px-2 text-xs font-medium text-ink-muted shadow-xs transition-colors hover:bg-surface-muted hover:text-ink",
         className,
       )}
       aria-label={copied ? "Copied" : label}

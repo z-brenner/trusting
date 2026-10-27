@@ -50,13 +50,13 @@ export default async function IntegrationsPage({ searchParams }: { searchParams:
       </div>
 
       <Card className="mt-6">
-        <div className="flex items-start gap-4 px-5 py-4">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-success-soft text-success" aria-hidden="true">
-            <ShieldCheck className="size-5" />
+        <div className="flex items-start gap-4 px-5 py-5">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-md border border-line bg-canvas text-ink-muted" aria-hidden="true">
+            <ShieldCheck className="size-4" strokeWidth={1.75} />
           </span>
           <div className="min-w-0">
-            <h2 className="text-[15px] font-semibold text-ink">How your files are handled</h2>
-            <ul className="mt-2 grid gap-2 text-sm text-ink-muted sm:grid-cols-3 sm:gap-6">
+            <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-ink">How your files are handled</h2>
+            <ul className="mt-3 grid gap-3 text-sm leading-relaxed text-ink-muted sm:grid-cols-3 sm:gap-6">
               <li className="flex items-start gap-2">
                 <UserCheck className="mt-0.5 size-4 shrink-0 text-ink-faint" aria-hidden="true" />
                 <span>Nothing is synchronised. A file is copied only when an administrator explicitly imports it.</span>

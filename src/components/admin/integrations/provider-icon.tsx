@@ -6,10 +6,13 @@ export function ProviderIcon({ provider, className }: { provider: "google" | "mi
   const Icon = provider === "google" ? HardDrive : Cloud;
   return (
     <span
-      className={cn("flex size-10 shrink-0 items-center justify-center rounded-md bg-neutral-soft text-ink-muted", className)}
+      className={cn(
+        "flex size-10 shrink-0 items-center justify-center rounded-md border border-line bg-canvas text-ink-muted",
+        className,
+      )}
       aria-hidden="true"
     >
-      <Icon className="size-5" />
+      <Icon className="size-5" strokeWidth={1.75} />
     </span>
   );
 }

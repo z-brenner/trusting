@@ -54,9 +54,9 @@ export function Dialog({
     >
       {open ? (
         <div onClick={(e) => e.stopPropagation()}>
-          <div className="flex items-start justify-between gap-4 px-6 pt-5">
-            <div>
-              <h2 id="dialog-title" className="text-lg font-semibold">
+          <div className="flex items-start justify-between gap-4 border-b border-line px-6 py-4">
+            <div className="min-w-0">
+              <h2 id="dialog-title" className="text-[17px] font-semibold tracking-[-0.01em]">
                 {title}
               </h2>
               {description ? <p className="mt-1 text-sm text-ink-muted">{description}</p> : null}
@@ -64,14 +64,14 @@ export function Dialog({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-md p-1 text-ink-faint hover:bg-neutral-soft hover:text-ink"
+              className="-mr-1.5 -mt-0.5 rounded-md p-1.5 text-ink-faint transition-colors hover:bg-neutral-soft hover:text-ink"
               aria-label="Close"
             >
               <X className="size-4" />
             </button>
           </div>
           <div className="px-6 py-5">{children}</div>
-          {footer ? <div className="flex justify-end gap-2 border-t border-line px-6 py-4">{footer}</div> : null}
+          {footer ? <div className="flex justify-end gap-2 border-t border-line bg-surface-muted px-6 py-4">{footer}</div> : null}
         </div>
       ) : null}
     </dialog>

@@ -41,18 +41,18 @@ export function ProviderCard(props: ProviderCardProps) {
 
   return (
     <Card className="flex flex-col">
-      <div className="flex items-start gap-4 border-b border-line px-5 py-4">
+      <div className="flex items-start gap-4 border-b border-line px-5 py-5">
         <ProviderIcon provider={provider} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-[15px] font-semibold text-ink">{label}</h2>
+            <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-ink">{label}</h2>
             <Badge tone={status.tone}>{status.text}</Badge>
           </div>
-          <p className="mt-0.5 text-sm text-ink-muted">{DESCRIPTIONS[provider]}</p>
+          <p className="mt-1 text-sm leading-relaxed text-ink-muted">{DESCRIPTIONS[provider]}</p>
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col gap-5 px-5 py-4">
+      <div className="flex flex-1 flex-col gap-5 px-5 py-5">
         {!configured ? <NotConfigured {...props} /> : connection ? <Connected {...props} connection={connection} /> : <NotConnected {...props} />}
       </div>
     </Card>
@@ -126,7 +126,7 @@ function Connected({ provider, label, scopeDescriptions, connection }: ProviderC
 function ScopeList({ items, title = "Access you will be asked to grant" }: { items: string[]; title?: string }) {
   return (
     <div>
-      <p className="text-xs font-medium tracking-wide text-ink-faint uppercase">{title}</p>
+      <p className="eyebrow">{title}</p>
       <ul className="mt-2 space-y-1.5">
         {items.map((item) => (
           <li key={item} className="flex items-start gap-2 text-sm text-ink">
@@ -142,11 +142,11 @@ function ScopeList({ items, title = "Access you will be asked to grant" }: { ite
 function RedirectUri({ value, compact }: { value: string; compact?: boolean }) {
   return (
     <div>
-      <p className="text-xs font-medium tracking-wide text-ink-faint uppercase">
+      <p className="eyebrow">
         {compact ? "Registered redirect URI" : "Redirect URI to register"}
       </p>
-      <div className="mt-1.5 flex items-center gap-2 rounded-md border border-line bg-surface-muted py-1.5 pr-1.5 pl-3">
-        <code className="min-w-0 flex-1 truncate text-[13px] text-ink" title={value}>
+      <div className="mt-2 flex items-center gap-2 rounded-md border border-line bg-canvas py-1.5 pr-1.5 pl-3">
+        <code className="min-w-0 flex-1 truncate font-mono text-[12px] text-ink" title={value}>
           {value}
         </code>
         <CopyButton value={value} />

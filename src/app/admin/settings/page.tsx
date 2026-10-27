@@ -83,7 +83,7 @@ export default async function SettingsPage() {
         <Card>
           <CardHeader title="System information" description="Read-only. Change these through environment variables." />
           <CardBody>
-            <dl className="grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
+            <dl className="grid gap-x-6 gap-y-5 text-sm sm:grid-cols-2">
               <Info label="Public URL">
                 <code className="font-mono text-[13px]">{e.APP_URL}</code>
               </Info>
@@ -111,8 +111,8 @@ export default async function SettingsPage() {
 function Info({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-[13px] text-ink-muted">{label}</dt>
-      <dd className="mt-0.5 text-ink">{children}</dd>
+      <dt className="eyebrow">{label}</dt>
+      <dd className="mt-1.5 text-ink">{children}</dd>
     </div>
   );
 }

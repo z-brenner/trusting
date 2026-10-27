@@ -38,7 +38,7 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
     <AdminContainer>
       <PageHeader title="Access requests" description="Visitors who asked to see restricted documents. Approvals send a time-limited link." />
 
-      <nav aria-label="Request status" className="mb-4 flex gap-1 border-b border-line">
+      <nav aria-label="Request status" className="mb-5 flex gap-4 border-b border-line">
         {TABS.map((tab) => {
           const active = (status === "REVOKED" ? "APPROVED" : status) === tab.value;
           const count = tab.value === "APPROVED" ? countFor("APPROVED") + countFor("REVOKED") : countFor(tab.value);
@@ -48,12 +48,16 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
               href={tab.value === "PENDING" ? "/admin/requests" : `/admin/requests?status=${tab.value}`}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "-mb-px flex items-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition-colors",
+                "-mb-px flex items-center gap-2 border-b-2 px-0.5 pb-2.5 pt-1 text-sm font-medium transition-colors",
                 active ? "border-ink text-ink" : "border-transparent text-ink-muted hover:text-ink",
               )}
             >
               {tab.label}
-              {count > 0 ? <span className="rounded-full bg-neutral-soft px-1.5 text-xs text-ink-muted">{count}</span> : null}
+              {count > 0 ? (
+                <span className={cn("rounded-full px-1.5 font-mono text-[11px] tabular-nums", active ? "bg-ink text-ink-inverse" : "bg-neutral-soft text-ink-muted")}>
+                  {count}
+                </span>
+              ) : null}
             </Link>
           );
         })}
@@ -73,17 +77,17 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
         <div className="overflow-hidden rounded-lg border border-line bg-surface">
           <table className="w-full text-sm">
             <thead className="hidden md:table-header-group">
-              <tr className="border-b border-line text-left text-xs font-medium tracking-wide text-ink-muted uppercase">
-                <th className="px-4 py-2.5 font-medium">Requester</th>
-                <th className="px-3 py-2.5 font-medium">Company</th>
-                <th className="px-3 py-2.5 font-medium">Documents</th>
-                <th className="px-3 py-2.5 font-medium">Submitted</th>
-                {status !== "PENDING" ? <th className="px-3 py-2.5 font-medium">Status</th> : null}
+              <tr className="border-b border-line bg-surface-muted text-left">
+                <th className="eyebrow px-4 py-2.5">Requester</th>
+                <th className="eyebrow px-3 py-2.5">Company</th>
+                <th className="eyebrow px-3 py-2.5">Documents</th>
+                <th className="eyebrow px-3 py-2.5">Submitted</th>
+                {status !== "PENDING" ? <th className="eyebrow px-3 py-2.5">Status</th> : null}
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
               {requests.map((r) => (
-                <tr key={r.id} className="group relative align-top hover:bg-surface-muted">
+                <tr key={r.id} className="group relative align-top transition-colors hover:bg-surface-muted">
                   <td className="px-4 py-3">
                     <Link href={`/admin/requests/${r.id}`} className="font-medium text-ink after:absolute after:inset-0 hover:underline">
                       {r.requesterName}

@@ -10,6 +10,7 @@ import { FormSection } from "@/components/ui/field";
 import { deleteCertificationAction, deleteContactAction } from "@/lib/actions/editor";
 import { formatDate } from "@/lib/utils";
 import { ConfirmButton } from "../confirm-button";
+import { StepBody } from "../step-body";
 import { StepFooter } from "../step-footer";
 import { useTrackedAction } from "../wizard-context";
 import { CertificationDialog } from "./certification-dialog";
@@ -49,7 +50,7 @@ export function PeopleStep({ contacts, certifications }: { contacts: Contact[]; 
   const publishedContacts = contacts.filter((c) => c.isPublished).length;
 
   return (
-    <div className="space-y-10">
+    <StepBody>
       <FormSection
         title="Contacts"
         description="People visitors can turn to for security or privacy questions. Details you do not publish stay visible to administrators only."
@@ -67,9 +68,9 @@ export function PeopleStep({ contacts, certifications }: { contacts: Contact[]; 
           />
         ) : (
           <>
-            <ul className="divide-y divide-line rounded-lg border border-line bg-surface shadow-xs">
+            <ul className="divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface">
               {contacts.map((c) => (
-                <li key={c.id} className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-start">
+                <li key={c.id} className="flex flex-col gap-3 px-4 py-3.5 transition-colors hover:bg-surface-muted sm:flex-row sm:items-start">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="text-sm font-medium text-ink">{c.name}</span>
@@ -132,12 +133,12 @@ export function PeopleStep({ contacts, certifications }: { contacts: Contact[]; 
           />
         ) : (
           <>
-            <ul className="divide-y divide-line rounded-lg border border-line bg-surface shadow-xs">
+            <ul className="divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface">
               {certifications.map((c) => {
                 const state = expiryState(c.expiresAt);
                 const holder = c.holder?.name || c.holderName;
                 return (
-                  <li key={c.id} className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-start">
+                  <li key={c.id} className="flex flex-col gap-3 px-4 py-3.5 transition-colors hover:bg-surface-muted sm:flex-row sm:items-start">
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="text-sm font-medium text-ink">{c.name}</span>
@@ -194,6 +195,6 @@ export function PeopleStep({ contacts, certifications }: { contacts: Contact[]; 
       />
 
       <StepFooter />
-    </div>
+    </StepBody>
   );
 }
