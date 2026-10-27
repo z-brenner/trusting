@@ -255,5 +255,14 @@ export async function hasUnpublishedChanges(): Promise<boolean> {
   const published = await getPublished();
   if (!published) return false;
   const current = await buildSnapshot();
-  return JSON.stringify(current) !== JSON.stringify(published.snapshot);
+  return stableStringify(current) !== stableStringify(published.snapshot);
+}
+
+/** JSON with sorted keys, because Postgres jsonb does not preserve key order. */
+export function stableStringify(value: unknown): string {
+  return JSON.stringify(value, (_key, v) =>
+    v && typeof v === "object" && !Array.isArray(v)
+      ? Object.fromEntries(Object.keys(v as Record<string, unknown>).sort().map((k) => [k, (v as Record<string, unknown>)[k]]))
+      : v,
+  );
 }

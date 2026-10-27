@@ -5,6 +5,8 @@ export default defineConfig({
   test: {
     include: ["tests/unit/**/*.test.ts"],
     environment: "node",
+    globalSetup: ["tests/unit/global-setup.ts"],
+    fileParallelism: false,
     env: {
       DATABASE_URL: "postgresql://postgres@127.0.0.1:5432/trustcenter_test",
       SESSION_SECRET: "test-session-secret-test-session-secret-test",
@@ -14,5 +16,5 @@ export default defineConfig({
       LOCAL_STORAGE_PATH: "./storage-test",
     },
   },
-  resolve: { alias: { "@": path.resolve(__dirname, "src") } },
+  resolve: { alias: { "@": path.resolve(import.meta.dirname, "src") } },
 });
