@@ -25,7 +25,7 @@ test.describe("README screenshots", () => {
     await expect(page.getByRole("heading", { name: "Overview" })).toBeVisible();
     await page.screenshot({ path: out("dashboard"), fullPage: false });
     await page.goto("/admin/edit/2");
-    await expect(page.getByRole("heading", { name: "Subprocessors" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Subprocessors" })).toBeVisible();
     await page.screenshot({ path: out("editor"), fullPage: false });
     await page.goto("/admin/documents");
     await expect(page.getByRole("heading", { name: "Documents" })).toBeVisible();

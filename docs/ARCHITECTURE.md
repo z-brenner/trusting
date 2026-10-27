@@ -55,5 +55,5 @@ tests/unit, tests/e2e        Vitest and Playwright
   uploads and public forms use route handlers guarded by `assertSameOrigin()` plus rate limits.
 - **Secrets.** Integration tokens are encrypted with AES-256-GCM under `ENCRYPTION_KEY` before they
   are stored. OAuth uses server-side authorization-code flow with `state` and PKCE.
-- **No proprietary services required.** PostgreSQL + (MinIO | any S3) + SMTP (optional) is all you
+- **No proprietary services required.** PostgreSQL + (Garage, MinIO or any S3-compatible store, or a local folder) + SMTP (optional) is all you
   need. Google/Microsoft integrations are optional and use OAuth apps you own.

@@ -82,9 +82,8 @@ jobs:
 
   e2e:
     name: End-to-end tests (Playwright)
-    # Opt-in for now: run via "Run workflow" with the e2e checkbox. To make it
-    # mandatory, replace the condition with `if: true` (or remove it).
-    if: github.event_name == 'workflow_dispatch' && inputs.e2e
+    # Runs on every push and pull request; the `e2e` workflow_dispatch input is kept
+    # so the suite can also be triggered by hand.
     runs-on: ubuntu-latest
     timeout-minutes: 30
     services:

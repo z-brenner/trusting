@@ -172,7 +172,7 @@ and what you need to bring yourself.
 | Document upload, visibility, signed downloads | Implemented, unit + e2e tested | Allow-list of document types; `MAX_UPLOAD_MB` |
 | Access requests, grants, revocation | Implemented, e2e tested | |
 | Audit log | Implemented | |
-| Docker image and Compose stack | Implemented; build, migrations and health check verified | MinIO was replaced by Garage because MinIO's images are no longer published |
+| Docker image and Compose stack | Implemented; production build, migration entrypoint and health check verified on the host (no Docker daemon was available to run `docker build` itself) | MinIO was replaced by Garage because MinIO's images are no longer published; any S3-compatible service works |
 | Google Drive import | Implemented, e2e tested against a mock Google API | Needs your own Google OAuth client; not yet exercised against production Google by the maintainers |
 | OneDrive import | Implemented, e2e tested against a mock Microsoft Graph | Needs your own Entra app registration; same caveat |
 | Email notifications | Implemented | Needs SMTP credentials; without them the admin UI shows the link to copy |

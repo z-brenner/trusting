@@ -42,7 +42,7 @@ export function fixturePath(name: "policy.pdf" | "logo.png" | "malware.exe" | "r
 }
 
 /** Context options for an anonymous visitor (the project default carries the admin session). */
-export const ANON = { storageState: { cookies: [], origins: [] } } as const;
+export const ANON: { storageState: { cookies: never[]; origins: never[] } } = { storageState: { cookies: [], origins: [] } };
 
 /**
  * Resolves once the App Router has hydrated (it mounts the route announcer on
