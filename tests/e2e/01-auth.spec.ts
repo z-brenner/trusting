@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { ADMIN } from "./helpers/fixtures";
+import { ADMIN, waitForHydration } from "./helpers/fixtures";
 
 test.describe("administrator authentication", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
@@ -11,6 +11,7 @@ test.describe("administrator authentication", () => {
 
   test("rejects a wrong password, keeps the email, and signs in with the right one", async ({ page }) => {
     await page.goto("/login");
+    await waitForHydration(page);
     await page.getByLabel("Email address").fill(ADMIN.email);
     await page.getByLabel("Password").fill("definitely-wrong-password");
     await page.getByRole("button", { name: "Sign in" }).click();
@@ -35,14 +36,20 @@ test.describe("administrator authentication", () => {
 
   test("rate limits repeated failed sign-ins", async ({ page }) => {
     await page.goto("/login");
-    for (let i = 0; i < 10; i++) {
+    await waitForHydration(page);
+    const submit = async (password: string) => {
       await page.getByLabel("Email address").fill("victim@example.com");
-      await page.getByLabel("Password").fill(`wrong-${i}`);
-      await page.getByRole("button", { name: "Sign in" }).click();
-      await expect(page.getByRole("alert")).toBeVisible();
+      await page.getByLabel("Password").fill(password);
+      await Promise.all([
+        page.waitForResponse((r) => r.request().method() === "POST" && r.url().endsWith("/login")),
+        page.getByRole("button", { name: "Sign in" }).click(),
+      ]);
+    };
+    for (let i = 0; i < 10; i++) {
+      await submit(`wrong-${i}`);
+      await expect(page.getByRole("alert").filter({ hasText: /Incorrect|Too many/ })).toBeVisible();
     }
-    await page.getByLabel("Password").fill("wrong-final");
-    await page.getByRole("button", { name: "Sign in" }).click();
+    await submit("wrong-final");
     await expect(page.getByText(/Too many sign-in attempts/)).toBeVisible();
   });
 

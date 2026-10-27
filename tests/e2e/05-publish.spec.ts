@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { seedTrustCenter } from "./helpers/seed";
 import { db } from "./helpers/db";
+import { ANON } from "./helpers/fixtures";
 
 test.describe("publishing", () => {
   test.beforeAll(async () => {
@@ -10,7 +11,7 @@ test.describe("publishing", () => {
   test("draft edits stay private until published; unpublish hides the site", async ({ page, browser }) => {
     await db().trustCenter.update({ where: { id: "default" }, data: { tagline: "A brand new tagline" } });
 
-    const visitor = await browser.newContext();
+    const visitor = await browser.newContext(ANON);
     const vp = await visitor.newPage();
     await vp.goto("/");
     await expect(vp.getByText("A brand new tagline")).toHaveCount(0);

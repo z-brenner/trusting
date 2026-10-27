@@ -1,11 +1,12 @@
 import { test, expect } from "@playwright/test";
 import { seedTrustCenter } from "./helpers/seed";
 import { db } from "./helpers/db";
+import { ANON } from "./helpers/fixtures";
 
 let docs: Record<string, string>;
 
 test.describe("public Trust Center", () => {
-  test.use({ storageState: { cookies: [], origins: [] } });
+  test.use(ANON);
 
   test.beforeAll(async () => {
     docs = (await seedTrustCenter()).documents;
@@ -24,7 +25,7 @@ test.describe("public Trust Center", () => {
     await expect(page.getByText("Self-attested alignment")).toBeVisible();
     await expect(page.getByText("Implementation in progress")).toBeVisible();
     // Subprocessors, locations and the map.
-    await expect(page.getByText("Amazon Web Services (AWS)")).toBeVisible();
+    await expect(page.getByText("Amazon Web Services (AWS)").first()).toBeVisible();
     await expect(page.getByText("Ireland").first()).toBeVisible();
     await expect(page.locator("svg[role=img], svg").filter({ has: page.locator("path") }).first()).toBeVisible();
     // Unpublished contact and private documents never appear.
@@ -48,8 +49,12 @@ test.describe("public Trust Center", () => {
     await page.goto("/#subprocessors");
     const ireland = page.getByRole("button", { name: /Ireland/ }).first();
     await ireland.click();
-    await expect(page.getByText(/process(es)? data in Ireland/)).toBeVisible();
-    await expect(page.getByText("Amazon Web Services (AWS)").nth(1)).toBeVisible();
+    const selection = page.locator("[aria-live=polite]").filter({ hasText: /data in Ireland/ });
+    await expect(selection.getByRole("heading", { name: /process(es)? data in Ireland/ })).toBeVisible();
+    await expect(selection.getByText("Amazon Web Services (AWS)")).toBeVisible();
+    await expect(selection.getByText("Stripe")).toHaveCount(0);
+    await selection.getByRole("button", { name: "Clear selection" }).click();
+    await expect(selection).toHaveCount(0);
   });
 
   test("public documents download through signed, expiring links; others are blocked", async ({ page, request }) => {

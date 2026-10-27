@@ -2,6 +2,8 @@
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
+  // CommonJS keeps the client importable from the Playwright test runner too.
+  moduleFormat = "cjs"
 }
 
 datasource db {

@@ -46,7 +46,6 @@
 import http from "node:http";
 import { createHash, randomBytes } from "node:crypto";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
 
 type Provider = "google" | "microsoft";
 
@@ -655,7 +654,8 @@ export async function startMockProviders({ googlePort, microsoftPort }: { google
   };
 }
 
-const isMain = process.argv[1] ? import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href : false;
+// Works under both ESM (tsx CLI) and CJS (Playwright transpilation).
+const isMain = process.argv[1] ? path.resolve(process.argv[1]) === __filename || process.env.OAUTH_MOCK_CLI === "1" : false;
 if (isMain) {
   const googlePort = Number(process.env.MOCK_GOOGLE_PORT ?? 4100);
   const microsoftPort = Number(process.env.MOCK_MICROSOFT_PORT ?? 4200);

@@ -31,6 +31,12 @@ export const e2eEnv = {
   MICROSOFT_GRAPH_BASE_URL: `http://127.0.0.1:${MOCK_MICROSOFT_PORT}`,
 };
 
+// Test workers import application modules (seeding, snapshots), which validate
+// their environment at load time, so they get the same configuration as the server.
+for (const [key, value] of Object.entries(e2eEnv)) {
+  if (key !== "NODE_ENV" && key !== "PORT") process.env[key] = value;
+}
+
 export default defineConfig({
   testDir: "./tests/e2e",
   globalSetup: "./tests/e2e/global-setup.ts",
@@ -56,7 +62,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm next dev -p 3300",
+    command: "pnpm tsx tests/e2e/prepare-db.ts && pnpm next dev -p 3300",
     url: `${E2E_BASE_URL}/api/health`,
     reuseExistingServer: false,
     timeout: 120_000,

@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { ADMIN } from "./helpers/fixtures";
+import { ADMIN, ANON } from "./helpers/fixtures";
 import { db } from "./helpers/db";
 
 test.describe("settings", () => {
@@ -15,7 +15,7 @@ test.describe("settings", () => {
     await page.getByRole("button", { name: "Create account" }).click();
     await expect(page.getByText("sam@example.com")).toBeVisible();
 
-    const other = await browser.newContext();
+    const other = await browser.newContext(ANON);
     const op = await other.newPage();
     await op.goto("/login");
     await op.getByLabel("Email address").fill("sam@example.com");
@@ -33,20 +33,24 @@ test.describe("settings", () => {
   });
 
   test("changes the password and signs out other sessions", async ({ page, browser }) => {
-    const other = await browser.newContext({ storageState: "tests/e2e/.auth/admin.json" });
+    // A second, independent session for the same administrator.
+    const other = await browser.newContext(ANON);
     const op = await other.newPage();
-    await op.goto("/admin");
+    await op.goto("/login");
+    await op.getByLabel("Email address").fill(ADMIN.email);
+    await op.getByLabel("Password").fill(ADMIN.password);
+    await op.getByRole("button", { name: "Sign in" }).click();
     await expect(op).toHaveURL(/\/admin$/);
 
     await page.goto("/admin/settings");
     await page.getByLabel("Current password").fill("wrong-current-password");
-    await page.getByLabel("New password").fill("new-admin-password-2026");
+    await page.getByLabel("New password", { exact: true }).fill("new-admin-password-2026");
     await page.getByLabel("Confirm new password").fill("new-admin-password-2026");
     await page.getByRole("button", { name: "Change password" }).click();
     await expect(page.getByText("Current password is incorrect")).toBeVisible();
 
     await page.getByLabel("Current password").fill(ADMIN.password);
-    await page.getByLabel("New password").fill("new-admin-password-2026");
+    await page.getByLabel("New password", { exact: true }).fill("new-admin-password-2026");
     await page.getByLabel("Confirm new password").fill("new-admin-password-2026");
     await page.getByRole("button", { name: "Change password" }).click();
     await expect(page.getByText("Password updated")).toBeVisible();
@@ -57,7 +61,7 @@ test.describe("settings", () => {
 
     // Restore for later specs.
     await page.getByLabel("Current password").fill("new-admin-password-2026");
-    await page.getByLabel("New password").fill(ADMIN.password);
+    await page.getByLabel("New password", { exact: true }).fill(ADMIN.password);
     await page.getByLabel("Confirm new password").fill(ADMIN.password);
     await page.getByRole("button", { name: "Change password" }).click();
     await expect(page.getByText("Password updated")).toBeVisible();

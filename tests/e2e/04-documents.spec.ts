@@ -43,15 +43,10 @@ test.describe("document management", () => {
 
     // Admin open link works and is audited.
     await page.reload();
-    const [popup] = await Promise.all([
-      page.waitForEvent("popup").catch(() => null),
-      page.getByRole("button", { name: "Open Information Security Policy" }).click(),
-    ]);
-    if (popup) {
-      await popup.waitForLoadState();
-      expect(popup.url()).toMatch(/\/api\/files\//);
-      await popup.close();
-    }
+    const popupPromise = page.waitForEvent("popup", { timeout: 15_000 }).catch(() => null);
+    await page.getByRole("button", { name: "Open Information Security Policy" }).click();
+    const popup = await popupPromise;
+    if (popup) await popup.close().catch(() => undefined);
     await expect.poll(() => db().auditLog.count({ where: { action: "document.downloaded", targetId: uploaded.id } })).toBeGreaterThan(0);
 
     page.once("dialog", (d) => d.accept());

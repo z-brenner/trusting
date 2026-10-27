@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { db } from "./helpers/db";
-import { fixturePath } from "./helpers/fixtures";
+import { ANON, fixturePath } from "./helpers/fixtures";
 
 test.describe("guided editor", () => {
   test("step 1 autosaves company information and uploads a logo", async ({ page }) => {
@@ -14,7 +14,7 @@ test.describe("guided editor", () => {
     await expect.poll(async () => (await db().trustCenter.findUniqueOrThrow({ where: { id: "default" } })).tagline).toBe("Security you can verify.");
 
     await page.locator('input[type="file"][aria-label="Upload logo"]').setInputFiles(fixturePath("logo.png"));
-    await expect(page.getByRole("img", { name: "Current logo" })).toBeVisible();
+    await expect(page.getByRole("img", { name: "Company logo" })).toBeVisible();
     await expect.poll(async () => (await db().trustCenter.findUniqueOrThrow({ where: { id: "default" } })).logoMime).toBe("image/png");
     const logo = await page.request.get("/api/logo");
     expect(logo.status()).toBe(200);
@@ -37,7 +37,7 @@ test.describe("guided editor", () => {
     await expect.poll(() => db().subprocessor.count({ where: { vendorSlug: "azure" } })).toBe(1);
     await expect(page.getByText("No locations set").first()).toBeVisible();
 
-    const row = page.locator("li, div").filter({ has: page.getByRole("heading", { name: "Microsoft Azure" }) }).first();
+    const row = page.getByRole("listitem").filter({ hasText: "Microsoft Azure" }).filter({ has: page.getByRole("button", { name: "Edit" }) }).first();
     await row.getByRole("button", { name: "Edit" }).click();
     const dialog = page.getByRole("dialog");
     await expect(dialog.getByText(/headquarters is not necessarily a processing location/)).toBeVisible();
@@ -62,7 +62,7 @@ test.describe("guided editor", () => {
     await page.getByRole("dialog").getByLabel("Vendor name").fill("Acme Payroll Ltd");
     await page.getByRole("dialog").getByRole("button", { name: /Save|Add/ }).click();
     await expect(page.getByRole("dialog")).toBeHidden();
-    await expect(page.getByText("Acme Payroll Ltd")).toBeVisible();
+    await expect(page.getByText("Acme Payroll Ltd").first()).toBeVisible();
 
     await page.getByLabel("Search vendors").fill("azure");
     await page.getByRole("checkbox", { name: /Microsoft Azure/ }).uncheck();
@@ -75,13 +75,17 @@ test.describe("guided editor", () => {
     await page.getByLabel("Search frameworks").fill("HIPAA");
     await page.getByRole("checkbox", { name: /HIPAA/ }).check();
     await expect.poll(() => db().frameworkEntry.count({ where: { frameworkSlug: "hipaa" } })).toBe(1);
+    const toggle = page.locator('button[aria-controls="fw-hipaa-panel"]');
+    await expect(toggle).toBeVisible();
+    if ((await toggle.getAttribute("aria-expanded")) !== "true") await toggle.click();
     const status = page.locator("#fw-hipaa-status");
+    await expect(status).toBeVisible();
     const options = await status.locator("option").allTextContents();
     expect(options.join(" ")).not.toMatch(/Certified/);
     expect(options.join(" ")).toMatch(/Applicable/);
     await status.selectOption("APPLICABLE");
     await page.locator("#fw-hipaa-note").fill("We act as a business associate.");
-    await page.locator("section, div").filter({ has: status }).getByRole("button", { name: "Save" }).first().click();
+    await page.locator("#fw-hipaa-panel").getByRole("button", { name: "Save" }).click();
     await expect.poll(async () => (await db().frameworkEntry.findFirstOrThrow({ where: { frameworkSlug: "hipaa" } })).status).toBe("APPLICABLE");
 
     // GDPR cannot be "Certified" through the API either.
@@ -112,7 +116,7 @@ test.describe("guided editor", () => {
     dialog = page.getByRole("dialog");
     await dialog.getByLabel("Certification").fill("CISM – Certified Information Security Manager");
     await expect(dialog.getByLabel("Issuer")).toHaveValue("ISACA");
-    await dialog.getByLabel("Holder", { exact: true }).selectOption({ label: "Priya Natarajan" });
+    await dialog.getByLabel("Holder", { exact: true }).selectOption(contact.id);
     await dialog.getByLabel("Issued").fill("2024-05-01");
     await dialog.getByLabel("Expires").fill("2027-05-01");
     await dialog.getByLabel("Credential ID").fill("CISM-123");
@@ -136,13 +140,13 @@ test.describe("guided editor", () => {
     await page.getByRole("button", { name: "Copy public URL" }).click();
     await expect(page.getByText("http://localhost:3300", { exact: false }).first()).toBeVisible();
 
-    const visitor = await browser.newContext();
+    const visitor = await browser.newContext(ANON);
     const vp = await visitor.newPage();
     await vp.goto("/");
-    await expect(vp.getByText("Priya Natarajan")).toBeVisible();
+    await expect(vp.getByText("Priya Natarajan").first()).toBeVisible();
     await expect(vp.getByText("priya@acme-analytics.example")).toBeVisible();
-    await expect(vp.getByText("Acme Payroll Ltd")).toBeVisible();
-    await expect(vp.getByText("HIPAA")).toBeVisible();
+    await expect(vp.getByText("Acme Payroll Ltd").first()).toBeVisible();
+    await expect(vp.getByText("HIPAA").first()).toBeVisible();
     await visitor.close();
   });
 
@@ -153,7 +157,7 @@ test.describe("guided editor", () => {
     expect(res.headers()["content-security-policy"]).toMatch(/frame-ancestors 'self'/);
     const home = await page.request.get("/");
     expect(home.headers()["x-frame-options"]).toBe("DENY");
-    const anon = await browser.newContext();
+    const anon = await browser.newContext(ANON);
     const r = await anon.request.get("/preview", { maxRedirects: 0 });
     expect([302, 303, 307]).toContain(r.status());
     await anon.close();

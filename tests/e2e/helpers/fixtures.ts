@@ -40,3 +40,15 @@ export function fixturePath(name: "policy.pdf" | "logo.png" | "malware.exe" | "r
   if (name === "renamed.pdf") writeFileSync(p, Buffer.from("MZ\x90\x00\x03\x00\x00\x00 not really a pdf"));
   return p;
 }
+
+/** Context options for an anonymous visitor (the project default carries the admin session). */
+export const ANON = { storageState: { cookies: [], origins: [] } } as const;
+
+/**
+ * Resolves once the App Router has hydrated (it mounts the route announcer on
+ * the client). Needed before interacting with forms on a cold dev server, where
+ * a pre-hydration submit would fall back to a full-page POST.
+ */
+export async function waitForHydration(page: import("@playwright/test").Page) {
+  await page.locator("#__next-route-announcer__").waitFor({ state: "attached", timeout: 60_000 });
+}

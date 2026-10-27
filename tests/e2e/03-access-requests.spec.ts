@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { seedTrustCenter, hashToken } from "./helpers/seed";
 import { db } from "./helpers/db";
+import { ANON } from "./helpers/fixtures";
 
 let docs: Record<string, string>;
 
@@ -10,12 +11,14 @@ test.describe("document access requests", () => {
   });
 
   test("a visitor can request access and the request appears for the administrator", async ({ browser, page }) => {
-    const visitor = await browser.newContext();
+    const visitor = await browser.newContext(ANON);
     const vp = await visitor.newPage();
     await vp.goto("/");
-    await vp.getByRole("button", { name: "Request access" }).first().click();
+    await vp.getByRole("button", { name: "Request access", exact: true }).first().click();
     const dialog = vp.getByRole("dialog");
     await expect(dialog.getByRole("heading", { name: "Request access to documents" })).toBeVisible();
+    await expect(dialog.getByRole("checkbox", { name: /Penetration Test Summary/ })).toBeChecked();
+    await dialog.getByRole("checkbox", { name: /SOC 2 Report/ }).check();
     await dialog.getByLabel("Your name").fill("Jane Buyer");
     await dialog.getByLabel("Work email").fill("not-an-email");
     await dialog.getByRole("button", { name: /Send request|Submit/ }).click();
@@ -60,11 +63,11 @@ test.describe("document access requests", () => {
     expect(updated.grantTokenHash).toBe(hashToken(grantUrl.split("/access/")[1]));
     expect(updated.grantExpiresAt!.getTime()).toBeGreaterThan(Date.now());
 
-    const visitor = await browser.newContext();
+    const visitor = await browser.newContext(ANON);
     const vp = await visitor.newPage();
     await vp.goto(grantUrl);
     await expect(vp).toHaveURL(/\/access$/);
-    await expect(vp.getByText("Penetration Test Summary")).toBeVisible();
+    await expect(vp.getByText("Penetration Test Summary").first()).toBeVisible();
     await expect(vp.getByText("Internal Runbook")).toHaveCount(0);
     const href = await vp.getByRole("link", { name: /Download/ }).first().getAttribute("href");
     const res = await vp.request.get(href!);
@@ -72,7 +75,7 @@ test.describe("document access requests", () => {
     expect(res.headers()["content-type"]).toBe("application/pdf");
 
     // Without the grant cookie the same link is useless.
-    const stranger = await browser.newContext();
+    const stranger = await browser.newContext(ANON);
     expect((await stranger.request.get(href!)).status()).toBe(403);
     await stranger.close();
 
