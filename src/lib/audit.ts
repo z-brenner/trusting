@@ -39,6 +39,8 @@ export const AUDIT_LABELS: Record<string, string> = {
   "admin.deleted": "Removed an administrator",
   "trustcenter.published": "Published the Trust Center",
   "trustcenter.unpublished": "Unpublished the Trust Center",
+  "trustcenter.logo_updated": "Updated the company logo",
+  "trustcenter.logo_removed": "Removed the company logo",
   "document.uploaded": "Uploaded a document",
   "document.imported": "Imported a document",
   "document.updated": "Updated a document",

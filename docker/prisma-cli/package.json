@@ -1,0 +1,10 @@
+{
+  "name": "trusting-prisma-cli",
+  "private": true,
+  "description": "Minimal dependency set used by the Docker image to run `prisma migrate deploy` at container start.",
+  "dependencies": {
+    "@prisma/config": "7.10.1",
+    "dotenv": "18.0.9",
+    "prisma": "7.10.1"
+  }
+}

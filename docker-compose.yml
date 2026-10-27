@@ -1,0 +1,96 @@
+# Trusting - self-hosted Trust Center
+#
+# Quick start (details in docs/install.md):
+#   cp .env.example .env            # then fill in the secrets, see below
+#   docker compose up -d
+#   open http://localhost:3000/setup
+#
+# All application settings live in .env (see .env.example / docs/configuration.md).
+# This file also reads a few values from .env for the database and the object
+# store so you only have to maintain them once:
+#   POSTGRES_USER / POSTGRES_PASSWORD / POSTGRES_DB   must match DATABASE_URL
+#   S3_ACCESS_KEY_ID / S3_SECRET_ACCESS_KEY / S3_BUCKET  are used to create the bucket
+#   GARAGE_RPC_SECRET                                internal secret of the object store
+#
+# Only the app is published on the host (port 3000). Put a TLS-terminating
+# reverse proxy in front of it for production (docs/deployment.md).
+
+services:
+  app:
+    # Use a published image when one exists for your fork/release, otherwise the
+    # Dockerfile in this directory is built on first `docker compose up`.
+    image: ${TRUSTING_IMAGE:-ghcr.io/z-brenner/trusting:latest}
+    build: .
+    restart: unless-stopped
+    init: true
+    env_file: .env
+    ports:
+      - "${TRUSTING_PORT:-3000}:3000"
+    volumes:
+      # Only used when STORAGE_DRIVER=local (LOCAL_STORAGE_PATH=./storage inside
+      # the container). Harmless otherwise.
+      - app-storage:/app/storage
+    depends_on:
+      db:
+        condition: service_healthy
+      garage:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 60s
+      retries: 3
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-trusting}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (and use the same value in DATABASE_URL)}
+      POSTGRES_DB: ${POSTGRES_DB:-trusting}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  # S3-compatible object store for uploaded documents and logos.
+  # Garage (https://garagehq.deuxfleurs.fr, AGPL-3.0) replaces MinIO, whose
+  # community images are no longer published. Remove this service (and the
+  # matching depends_on entry above) when you use an external S3 service or
+  # STORAGE_DRIVER=local.
+  garage:
+    image: dxflrs/garage:v2.5.0
+    restart: unless-stopped
+    command: ["/garage", "server", "--single-node", "--default-bucket"]
+    environment:
+      GARAGE_RPC_SECRET: ${GARAGE_RPC_SECRET:?Set GARAGE_RPC_SECRET in .env (openssl rand -hex 32)}
+      # On first start Garage creates this key and bucket; the app uses the same values.
+      GARAGE_DEFAULT_ACCESS_KEY: ${S3_ACCESS_KEY_ID:?Set S3_ACCESS_KEY_ID in .env}
+      GARAGE_DEFAULT_SECRET_KEY: ${S3_SECRET_ACCESS_KEY:?Set S3_SECRET_ACCESS_KEY in .env}
+      GARAGE_DEFAULT_BUCKET: ${S3_BUCKET:-trusting}
+    volumes:
+      - ./docker/garage.toml:/etc/garage.toml:ro
+      - garage-meta:/var/lib/garage/meta
+      - garage-data:/var/lib/garage/data
+    # Not published on the host: the app reaches it as http://garage:3900.
+    # Uncomment to use the S3 API from your machine (for example for backups with rclone):
+    # ports:
+    #   - "127.0.0.1:3900:3900"
+    healthcheck:
+      # The image has no shell or curl; the garage binary itself can query its node.
+      test: ["CMD", "/garage", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+
+volumes:
+  db-data:
+  garage-meta:
+  garage-data:
+  app-storage:
