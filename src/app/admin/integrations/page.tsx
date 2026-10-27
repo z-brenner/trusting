@@ -34,7 +34,7 @@ export default async function IntegrationsPage({ searchParams }: { searchParams:
         provider={first(sp.provider)}
       />
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {statuses.map((s) => (
           <ProviderCard
             key={s.key}

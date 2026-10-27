@@ -402,7 +402,7 @@ function DrivePickerDialog({ provider, onClose, onImported }: Omit<DrivePickerPr
 
 function ImportResults({ result }: { result: ImportResponse }) {
   return (
-    <div className="space-y-4">
+    <div className="max-h-[min(60vh,520px)] space-y-4 overflow-y-auto">
       {result.imported.length > 0 ? (
         <Alert tone="success" title={`Imported ${result.imported.length} ${result.imported.length === 1 ? "document" : "documents"}`}>
           <p>They are private. Change the visibility on the Documents page when you are ready to share them.</p>
@@ -456,6 +456,8 @@ function typeLabel(mimeType: string): string {
   if (mimeType === "application/vnd.google-apps.presentation") return "Google Slides";
   if (mimeType === "application/vnd.google-apps.drawing") return "Google Drawing";
   if (mimeType.startsWith("application/vnd.google-apps.")) return "Google item";
+  if (mimeType === "application/vnd.microsoft.package.oneNote") return "OneNote notebook";
+  if (mimeType.startsWith("application/vnd.microsoft.package.")) return "Package";
   if (mimeType.includes("wordprocessingml") || mimeType === "application/msword") return "Word";
   if (mimeType.includes("spreadsheetml") || mimeType === "application/vnd.ms-excel" || mimeType === "text/csv") return "Spreadsheet";
   if (mimeType.includes("presentationml") || mimeType === "application/vnd.ms-powerpoint") return "Presentation";
