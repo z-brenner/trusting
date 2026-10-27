@@ -1,0 +1,314 @@
+// Trust Center data model. One installation = one organization.
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- Administration ----------
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lastLoginAt  DateTime?
+  sessions     Session[]
+  auditLogs    AuditLog[]
+  publications Publication[]
+}
+
+model Session {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  userId    String
+  user      AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  ipAddress String?
+  userAgent String?
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id         String     @id @default(cuid())
+  actorId    String?
+  actor      AdminUser? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  actorLabel String?
+  action     String
+  targetType String?
+  targetId   String?
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime   @default(now())
+
+  @@index([createdAt])
+}
+
+// ---------- Trust Center (draft) ----------
+
+model TrustCenter {
+  id             String  @id @default("default")
+  companyName    String  @default("")
+  legalName      String  @default("")
+  title          String  @default("")
+  tagline        String  @default("")
+  description    String  @default("")
+  websiteUrl     String  @default("")
+  logoKey        String?
+  logoMime       String?
+  primaryColor   String  @default("#1f3a5f")
+  secondaryColor String  @default("#0f766e")
+  address        String  @default("")
+  registrationNumber String @default("")
+  industry       String  @default("")
+  contactEmail   String  @default("")
+  contactPhone   String  @default("")
+  contactNote    String  @default("")
+  showMap        Boolean @default(true)
+  wizardStep     Int     @default(1)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  currentPublicationId String?      @unique
+  currentPublication   Publication? @relation("CurrentPublication", fields: [currentPublicationId], references: [id], onDelete: SetNull)
+
+  subprocessors  Subprocessor[]
+  frameworks     FrameworkEntry[]
+  contacts       Contact[]
+  certifications Certification[]
+  documents      Document[]
+  publications   Publication[]
+}
+
+model Subprocessor {
+  id               String   @id @default(cuid())
+  trustCenterId    String   @default("default")
+  trustCenter      TrustCenter @relation(fields: [trustCenterId], references: [id], onDelete: Cascade)
+  vendorSlug       String?
+  name             String
+  websiteUrl       String   @default("")
+  privacyPolicyUrl String   @default("")
+  services         String   @default("")
+  locations        String[] @default([])
+  dataCategories   String[] @default([])
+  notes            String   @default("")
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([trustCenterId])
+}
+
+enum FrameworkStatus {
+  CERTIFIED
+  AUDITED
+  SELF_ATTESTED
+  IN_PROGRESS
+  APPLICABLE
+}
+
+model FrameworkEntry {
+  id            String          @id @default(cuid())
+  trustCenterId String          @default("default")
+  trustCenter   TrustCenter     @relation(fields: [trustCenterId], references: [id], onDelete: Cascade)
+  frameworkSlug String
+  status        FrameworkStatus
+  note          String          @default("")
+  details       Json?
+  validFrom     DateTime?
+  validUntil    DateTime?
+  sortOrder     Int             @default(0)
+  documents     FrameworkDocument[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@unique([trustCenterId, frameworkSlug])
+}
+
+model FrameworkDocument {
+  frameworkEntryId String
+  frameworkEntry   FrameworkEntry @relation(fields: [frameworkEntryId], references: [id], onDelete: Cascade)
+  documentId       String
+  document         Document       @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@id([frameworkEntryId, documentId])
+}
+
+model Contact {
+  id               String      @id @default(cuid())
+  trustCenterId    String      @default("default")
+  trustCenter      TrustCenter @relation(fields: [trustCenterId], references: [id], onDelete: Cascade)
+  name             String
+  jobTitle         String      @default("")
+  department       String      @default("")
+  email            String      @default("")
+  phone            String      @default("")
+  responsibilities String      @default("")
+  publishEmail     Boolean     @default(false)
+  publishPhone     Boolean     @default(false)
+  isPublished      Boolean     @default(true)
+  sortOrder        Int         @default(0)
+  certifications   Certification[]
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  @@index([trustCenterId])
+}
+
+model Certification {
+  id              String      @id @default(cuid())
+  trustCenterId   String      @default("default")
+  trustCenter     TrustCenter @relation(fields: [trustCenterId], references: [id], onDelete: Cascade)
+  name            String
+  issuer          String      @default("")
+  holderId        String?
+  holder          Contact?    @relation(fields: [holderId], references: [id], onDelete: SetNull)
+  holderName      String      @default("")
+  issuedAt        DateTime?
+  expiresAt       DateTime?
+  credentialId    String      @default("")
+  verificationUrl String      @default("")
+  isPublished     Boolean     @default(true)
+  sortOrder       Int         @default(0)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([trustCenterId])
+}
+
+// ---------- Documents ----------
+
+enum DocumentCategory {
+  PRIVACY_POLICY
+  SECURITY_POLICY
+  DATA_PROCESSING_AGREEMENT
+  PENETRATION_TEST
+  AUDIT_REPORT
+  COMPLIANCE_CERTIFICATE
+  INCIDENT_RESPONSE
+  BUSINESS_CONTINUITY
+  OTHER
+}
+
+enum DocumentVisibility {
+  PUBLIC
+  REQUEST
+  PRIVATE
+}
+
+enum DocumentSource {
+  UPLOAD
+  GOOGLE_DRIVE
+  ONEDRIVE
+}
+
+model Document {
+  id            String             @id @default(cuid())
+  trustCenterId String             @default("default")
+  trustCenter   TrustCenter        @relation(fields: [trustCenterId], references: [id], onDelete: Cascade)
+  title         String
+  description   String             @default("")
+  category      DocumentCategory   @default(OTHER)
+  visibility    DocumentVisibility @default(PRIVATE)
+  allowDownload Boolean            @default(true)
+  versionLabel  String             @default("")
+  documentDate  DateTime?
+  storageKey    String             @unique
+  fileName      String
+  mimeType      String
+  sizeBytes     Int
+  sha256        String
+  source        DocumentSource     @default(UPLOAD)
+  externalId    String?
+  externalUrl   String?
+  sortOrder     Int                @default(0)
+  frameworks    FrameworkDocument[]
+  accessRequests AccessRequestDocument[]
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  @@index([trustCenterId])
+}
+
+enum AccessRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  REVOKED
+}
+
+model AccessRequest {
+  id             String              @id @default(cuid())
+  requesterName  String
+  requesterEmail String
+  company        String              @default("")
+  message        String              @default("")
+  status         AccessRequestStatus @default(PENDING)
+  decisionNote   String              @default("")
+  decidedAt      DateTime?
+  decidedById    String?
+  grantTokenHash String?             @unique
+  grantExpiresAt DateTime?
+  ipAddress      String?
+  documents      AccessRequestDocument[]
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@index([status, createdAt])
+  @@index([requesterEmail])
+}
+
+model AccessRequestDocument {
+  accessRequestId String
+  accessRequest   AccessRequest @relation(fields: [accessRequestId], references: [id], onDelete: Cascade)
+  documentId      String
+  document        Document      @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@id([accessRequestId, documentId])
+}
+
+// ---------- Integrations ----------
+
+enum IntegrationProvider {
+  GOOGLE_DRIVE
+  ONEDRIVE
+}
+
+model Integration {
+  id              String              @id @default(cuid())
+  provider        IntegrationProvider @unique
+  accountEmail    String              @default("")
+  accountName     String              @default("")
+  accessTokenEnc  String
+  refreshTokenEnc String?
+  tokenExpiresAt  DateTime?
+  scopes          String              @default("")
+  connectedById   String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+}
+
+// ---------- Publishing ----------
+
+model Publication {
+  id            String      @id @default(cuid())
+  trustCenterId String      @default("default")
+  trustCenter   TrustCenter @relation(fields: [trustCenterId], references: [id], onDelete: Cascade)
+  version       Int
+  snapshot      Json
+  publishedAt   DateTime    @default(now())
+  publishedById String?
+  publishedBy   AdminUser?  @relation(fields: [publishedById], references: [id], onDelete: SetNull)
+  note          String      @default("")
+  currentFor    TrustCenter? @relation("CurrentPublication")
+
+  @@unique([trustCenterId, version])
+}
